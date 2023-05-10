@@ -18,5 +18,7 @@ public class Eira : ModuleRules
 			"EnhancedInput",
 			"GameplayTags"
 		});
+
+		PublicIncludePaths.Add("Eira");
 	}
 }

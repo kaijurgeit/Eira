@@ -9,6 +9,9 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Eira/Game/EiraGameplayTags.h"
+#include "Eira/Game/EiraInputComponent.h"
+#include "Eira/Game/EiraInputConfig.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -66,24 +69,32 @@ void AEiraCharacter::BeginPlay()
 	}
 }
 
+void AEiraCharacter::Input_Jump(const FInputActionValue& InputActionValue)
+{
+}
+
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
 void AEiraCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// Set up action bindings
-	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
+	if (UEiraInputComponent* EiraIC = CastChecked<UEiraInputComponent>(PlayerInputComponent))
+	{
+		// Make sure to set your input component class in the InputSettings->DefaultClasses
+		check(EiraIC);
+
+		const FEiraGameplayTags GameplayTags = FEiraGameplayTags::Get();
 		
 		//Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Triggered, this, &AEiraCharacter::Input_Jump);
 
 		//Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AEiraCharacter::Move);
+		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Triggered, this, &AEiraCharacter::Move);
 
 		//Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AEiraCharacter::Look);
-
+		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Triggered, this, &AEiraCharacter::Look);
 	}
 
 }
@@ -123,7 +134,6 @@ void AEiraCharacter::Look(const FInputActionValue& Value)
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
 }
-
 
 
 
