@@ -10,9 +10,6 @@ UCLASS(minimalapi)
 class AEiraGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-
-public:
-	AEiraGameMode();
 };
 
 

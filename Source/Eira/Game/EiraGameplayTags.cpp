@@ -16,8 +16,7 @@ void FEiraGameplayTags::InitializeNativeTags()
 void FEiraGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 {
 	AddTag(InputTag_Move, "InputTag.Move", "Move input.");
-	AddTag(InputTag_Look_Mouse, "InputTag.Look.Mouse", "Look (mouse) input.");
-	AddTag(InputTag_Look_Stick, "InputTag.Look.Stick", "Look (stick) input.");
+	AddTag(InputTag_Look, "InputTag.Look", "Look (mouse) input.");
 	AddTag(InputTag_Jump, "InputTag.Jump", "Jump input");
 	AddTag(InputTag_Fire, "InputTag.Fire", "Fire input.");
 }

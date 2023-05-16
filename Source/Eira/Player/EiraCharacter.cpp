@@ -71,6 +71,7 @@ void AEiraCharacter::BeginPlay()
 
 void AEiraCharacter::Input_Jump(const FInputActionValue& InputActionValue)
 {
+	Jump();
 }
 
 
@@ -88,13 +89,13 @@ void AEiraCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 		const FEiraGameplayTags GameplayTags = FEiraGameplayTags::Get();
 		
 		//Jumping
-		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Triggered, this, &AEiraCharacter::Input_Jump);
+		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Jump, ETriggerEvent::Triggered, this, &AEiraCharacter::Input_Jump);
 
 		//Moving
 		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Triggered, this, &AEiraCharacter::Move);
 
 		//Looking
-		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Triggered, this, &AEiraCharacter::Look);
+		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Look, ETriggerEvent::Triggered, this, &AEiraCharacter::Look);
 	}
 
 }
