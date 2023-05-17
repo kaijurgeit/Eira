@@ -16,7 +16,9 @@ public class Eira : ModuleRules
 			"InputCore",
 			"HeadMountedDisplay",
 			"EnhancedInput",
-			"GameplayTags"
+			"GameplayTags",
+			"GameplayTasks",
+			"GameplayAbilities"
 		});
 
 		PublicIncludePaths.Add("Eira");
