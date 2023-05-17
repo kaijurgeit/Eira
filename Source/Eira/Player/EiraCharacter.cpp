@@ -9,6 +9,10 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Eira/Game/EiraGameplayTags.h"
+#include "Eira/Game/EiraInputComponent.h"
+#include "AbilitySystem/EiraAttributeSet.h"
+#include "AbilitySystem/EiraAbilitySystemComponent.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -49,12 +53,36 @@ AEiraCharacter::AEiraCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+	AbilitySystemComponent = CreateDefaultSubobject<UEiraAbilitySystemComponent>("AbilitySystemComponent");
+}
+
+UAbilitySystemComponent* AEiraCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+void AEiraCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+		
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	GiveAbilities();
+}
+
+void AEiraCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+		
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	GiveAbilities();
 }
 
 void AEiraCharacter::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
+
+	Attributes = AbilitySystemComponent->GetSet<UEiraAttributeSet>();
 
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
@@ -66,24 +94,46 @@ void AEiraCharacter::BeginPlay()
 	}
 }
 
+void AEiraCharacter::Input_AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	AbilitySystemComponent->AbilityInputTagPressed(InputTag);
+}
+
+void AEiraCharacter::Input_AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	AbilitySystemComponent->AbilityInputTagReleased(InputTag);
+}
+
+void AEiraCharacter::Input_Jump(const FInputActionValue& InputActionValue)
+{
+	Jump();
+}
+
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
 void AEiraCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// Set up action bindings
-	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
+	if (UEiraInputComponent* EiraIC = CastChecked<UEiraInputComponent>(PlayerInputComponent))
+	{
+		// Make sure to set your input component class in the InputSettings->DefaultClasses
+		check(EiraIC);
+
+		const FEiraGameplayTags GameplayTags = FEiraGameplayTags::Get();
+
+		TArray<uint32> BindHadles;
+		EiraIC->BindAbilityActions(InputConfig, this, &AEiraCharacter::Input_AbilityInputTagPressed, &AEiraCharacter::Input_AbilityInputTagReleased, BindHadles);
 		
 		//Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Jump, ETriggerEvent::Triggered, this, &AEiraCharacter::Input_Jump);
 
 		//Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AEiraCharacter::Move);
+		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Triggered, this, &AEiraCharacter::Move);
 
 		//Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AEiraCharacter::Look);
-
+		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Look, ETriggerEvent::Triggered, this, &AEiraCharacter::Look);
 	}
 
 }
@@ -124,6 +174,14 @@ void AEiraCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
-
-
-
+void AEiraCharacter::GiveAbilities()
+{
+	if(HasAuthority() && AbilitySystemComponent)
+	{
+		for (TSubclassOf<UGameplayAbility>& DefaultAbility : DefaultAbilities)
+		{
+			FGameplayAbilitySpec AbilitySpec(DefaultAbility, 1);
+			AbilitySystemComponent->GiveAbility(AbilitySpec);
+		}
+	}
+}
