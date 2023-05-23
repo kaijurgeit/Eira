@@ -1,6 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "EiraCharacter.h"
+
+#include "EiraPlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
@@ -13,6 +15,10 @@
 #include "Eira/Game/EiraInputComponent.h"
 #include "AbilitySystem/EiraAttributeSet.h"
 #include "AbilitySystem/EiraAbilitySystemComponent.h"
+#include "Blueprint/UserWidget.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "UI/InventoryWidget.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -85,30 +91,18 @@ void AEiraCharacter::BeginPlay()
 	Attributes = AbilitySystemComponent->GetSet<UEiraAttributeSet>();
 
 	//Add Input Mapping Context
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	if (PlayerController = Cast<AEiraPlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
-}
 
-void AEiraCharacter::Input_AbilityInputTagPressed(FGameplayTag InputTag)
-{
-	AbilitySystemComponent->AbilityInputTagPressed(InputTag);
+	QuickInventoryMenu = Cast<UInventoryWidget>(CreateWidget(PlayerController, QuickInventoryMenuClass));
+	QuickInventoryMenu->AddToViewport();
+	QuickInventoryMenu->RemoveFromParent();
 }
-
-void AEiraCharacter::Input_AbilityInputTagReleased(FGameplayTag InputTag)
-{
-	AbilitySystemComponent->AbilityInputTagReleased(InputTag);
-}
-
-void AEiraCharacter::Input_Jump(const FInputActionValue& InputActionValue)
-{
-	Jump();
-}
-
 
 //////////////////////////////////////////////////////////////////////////
 // Input
@@ -126,16 +120,35 @@ void AEiraCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 		TArray<uint32> BindHadles;
 		EiraIC->BindAbilityActions(InputConfig, this, &AEiraCharacter::Input_AbilityInputTagPressed, &AEiraCharacter::Input_AbilityInputTagReleased, BindHadles);
 		
-		//Jumping
+		// Jumping
 		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Jump, ETriggerEvent::Triggered, this, &AEiraCharacter::Input_Jump);
 
-		//Moving
+		// Moving
 		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Triggered, this, &AEiraCharacter::Move);
 
-		//Looking
+		// Looking
 		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Look, ETriggerEvent::Triggered, this, &AEiraCharacter::Look);
+		
+		// Open/Close Menu
+		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Inventory_Open, ETriggerEvent::Started, this, &AEiraCharacter::OpenQuickInventoryMenu);
+		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Inventory_Close, ETriggerEvent::Completed, this, &AEiraCharacter::CloseQuickInventoryMenu);
 	}
 
+}
+
+void AEiraCharacter::Input_AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	AbilitySystemComponent->AbilityInputTagPressed(InputTag);
+}
+
+void AEiraCharacter::Input_AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	AbilitySystemComponent->AbilityInputTagReleased(InputTag);
+}
+
+void AEiraCharacter::Input_Jump(const FInputActionValue& InputActionValue)
+{
+	Jump();
 }
 
 void AEiraCharacter::Move(const FInputActionValue& Value)
@@ -183,5 +196,29 @@ void AEiraCharacter::GiveAbilities()
 			FGameplayAbilitySpec AbilitySpec(DefaultAbility, 1);
 			AbilitySystemComponent->GiveAbility(AbilitySpec);
 		}
+	}
+}
+
+void AEiraCharacter::OpenQuickInventoryMenu()
+{
+	QuickInventoryMenu->AddToViewport();
+	// TODO: Is using UWidgetBlueprintLibrary bad practice (there is a more native alternative with `SetInputMode()`)? 
+	UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(PlayerController, QuickInventoryMenu, EMouseLockMode::LockAlways);
+	UGameplayStatics::SetGlobalTimeDilation(this, TimeDilation);
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+	{
+		Subsystem->AddMappingContext(QuickInventoryMappingContext, 1);
+	}
+}
+
+void AEiraCharacter::CloseQuickInventoryMenu()
+{
+	QuickInventoryMenu->RemoveFromParent();
+	UWidgetBlueprintLibrary::SetInputMode_GameOnly(PlayerController);
+	constexpr const float NormalTime = 1.0f;
+	UGameplayStatics::SetGlobalTimeDilation(this, NormalTime);
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+	{
+		Subsystem->RemoveMappingContext(QuickInventoryMappingContext);
 	}
 }

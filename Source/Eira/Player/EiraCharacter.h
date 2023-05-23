@@ -17,6 +17,8 @@ class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
 class UGameplayAbility;
+class AEiraPlayerController;
+class UInventoryWidget;
 
 UCLASS(config=Game)
 class AEiraCharacter : public ACharacter, public IAbilitySystemInterface
@@ -35,17 +37,8 @@ class AEiraCharacter : public ACharacter, public IAbilitySystemInterface
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
 
-	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> JumpAction;
-
-	/** Move Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> MoveAction;
-
-	/** Look Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> LookAction;
+	TObjectPtr<UInputMappingContext> QuickInventoryMappingContext;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UEiraAbilitySystemComponent> AbilitySystemComponent;
@@ -63,23 +56,23 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "GAS")
 	TArray<TSubclassOf<UGameplayAbility>> DefaultAbilities;
 
-protected:
+protected:	
+	// To add mapping context
+	virtual void BeginPlay();
+
+	// Ssetup Input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	void Input_AbilityInputTagPressed(FGameplayTag InputTag);
+	void Input_AbilityInputTagReleased(FGameplayTag InputTag);
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
-
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 			
 
-protected:
-	// APawn interface
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;	
-	// To add mapping context
-	virtual void BeginPlay();
-	void Input_AbilityInputTagPressed(FGameplayTag InputTag);
-	void Input_AbilityInputTagReleased(FGameplayTag InputTag);
-
+	/** Handles Jumping */
+	void Input_Jump(const FInputActionValue& InputActionValue);
 
 public:
 	/** Returns CameraBoom subobject **/
@@ -90,10 +83,22 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UEiraInputConfig> InputConfig;
 
-	/** Handles Jumping */
-	void Input_Jump(const FInputActionValue& InputActionValue);
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> QuickInventoryMenuClass;
+	
+	UPROPERTY()
+	TObjectPtr<UInventoryWidget> QuickInventoryMenu;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float TimeDilation = .25f;
 	
 private:
+
+	UPROPERTY()
+	TObjectPtr<AEiraPlayerController> PlayerController;
+	
 	virtual void GiveAbilities();
+	void OpenQuickInventoryMenu();
+	void CloseQuickInventoryMenu();
 };
 
