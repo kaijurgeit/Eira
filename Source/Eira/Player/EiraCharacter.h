@@ -9,6 +9,7 @@
 #include "InputActionValue.h"
 #include "EiraCharacter.generated.h"
 
+class USphereComponent;
 class UEiraAttributeSet;
 class UEiraAbilitySystemComponent;
 class UEiraInputConfig;
@@ -42,6 +43,9 @@ class AEiraCharacter : public ACharacter, public IAbilitySystemInterface
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UEiraAbilitySystemComponent> AbilitySystemComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USphereComponent> InteractionSphere;
 
 	UPROPERTY()
 	const UEiraAttributeSet* Attributes;
