@@ -18,7 +18,11 @@ public class Eira : ModuleRules
 			"EnhancedInput",
 			"GameplayTags",
 			"GameplayTasks",
-			"GameplayAbilities"
+			"GameplayAbilities",
+			"Niagara",
+			"UMG",
+			"Slate",
+			"SlateCore"
 		});
 
 		PublicIncludePaths.Add("Eira");

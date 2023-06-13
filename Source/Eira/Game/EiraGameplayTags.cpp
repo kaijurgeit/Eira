@@ -19,6 +19,8 @@ void FEiraGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(InputTag_Look, "InputTag.Look", "Look (mouse) input.");
 	AddTag(InputTag_Jump, "InputTag.Jump", "Jump input");
 	AddTag(InputTag_Fire, "InputTag.Fire", "Fire input.");
+	AddTag(InputTag_Inventory_Open, "InputTag.Inventory.Open", "Fire input.");
+	AddTag(InputTag_Inventory_Close, "InputTag.Inventory.Close", "Fire input.");
 }
 
 void FEiraGameplayTags::AddTag(FGameplayTag& OutTag, const ANSICHAR* TagName, const ANSICHAR* TagComment)

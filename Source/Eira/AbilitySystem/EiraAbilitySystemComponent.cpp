@@ -138,7 +138,6 @@ void UEiraAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bGam
 	InputReleasedSpecHandles.Reset();
 }
 
-
 // Called when the game starts
 void UEiraAbilitySystemComponent::BeginPlay()
 {
