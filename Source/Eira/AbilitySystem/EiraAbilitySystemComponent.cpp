@@ -5,6 +5,7 @@
 
 #include "EiraGameplayAbility.h"
 
+UE_DEFINE_GAMEPLAY_TAG(TAG_Gameplay_AbilityInputBlocked, "Gameplay.AbilityInputBlocked");
 
 // Sets default values for this component's properties
 UEiraAbilitySystemComponent::UEiraAbilitySystemComponent()
@@ -62,9 +63,9 @@ void UEiraAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bGam
 		{
 			if (AbilitySpec->Ability && !AbilitySpec->IsActive())
 			{
-				const UEiraGameplayAbility* MyGameplayAbility = CastChecked<UEiraGameplayAbility>(AbilitySpec->Ability);
+				const UEiraGameplayAbility* EiraAbilityCDO = CastChecked<UEiraGameplayAbility>(AbilitySpec->Ability);
 
-				if (MyGameplayAbility->GetActivationPolicy() == EEiraAbilityActivationPolicy::WhileInputActive)
+				if (EiraAbilityCDO->GetActivationPolicy() == EEiraAbilityActivationPolicy::WhileInputActive)
 				{
 					AbilitiesToActivate.AddUnique(AbilitySpec->Handle);
 				}
@@ -147,6 +148,32 @@ void UEiraAbilitySystemComponent::BeginPlay()
 	
 }
 
+
+void UEiraAbilitySystemComponent::AbilitySpecInputPressed(FGameplayAbilitySpec& Spec)
+{
+	Super::AbilitySpecInputPressed(Spec);
+	
+	// We don't support UGameplayAbility::bReplicateInputDirectly.
+	// Use replicated events instead so that the WaitInputPress ability task works.
+	if (Spec.IsActive())
+	{
+		// Invoke the InputPressed event. This is not replicated here. If someone is listening, they may replicate the InputPressed event to the server.
+		InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputPressed, Spec.Handle, Spec.ActivationInfo.GetActivationPredictionKey());
+	}
+}
+
+void UEiraAbilitySystemComponent::AbilitySpecInputReleased(FGameplayAbilitySpec& Spec)
+{
+	Super::AbilitySpecInputReleased(Spec);	
+
+	// We don't support UGameplayAbility::bReplicateInputDirectly.
+	// Use replicated events instead so that the WaitInputRelease ability task works.
+	if (Spec.IsActive())
+	{
+		// Invoke the InputReleased event. This is not replicated here. If someone is listening, they may replicate the InputReleased event to the server.
+		InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputReleased, Spec.Handle, Spec.ActivationInfo.GetActivationPredictionKey());
+	}
+}
 
 // Called every frame
 void UEiraAbilitySystemComponent::TickComponent(float DeltaTime, ELevelTick TickType,

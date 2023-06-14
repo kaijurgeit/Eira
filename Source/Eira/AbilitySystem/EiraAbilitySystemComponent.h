@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
+#include "NativeGameplayTags.h"
 #include "EiraAbilitySystemComponent.generated.h"
 
+EIRA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Gameplay_AbilityInputBlocked);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class EIRA_API UEiraAbilitySystemComponent : public UAbilitySystemComponent
@@ -31,6 +33,9 @@ protected:
 	
 	// Handles to abilities that have their input held.
 	TArray<FGameplayAbilitySpecHandle> InputHeldSpecHandles;
+	
+	virtual void AbilitySpecInputPressed(FGameplayAbilitySpec& Spec) override;	
+	virtual void AbilitySpecInputReleased(FGameplayAbilitySpec& Spec) override;
 
 public:
 	// Called every frame
