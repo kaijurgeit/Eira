@@ -3,12 +3,13 @@
 
 #include "EiraUtilities.h"
 
-void UEiraUtilities::OrderByDistance(AActor* OriginActor, TArray<AActor*>& OutArray)
+void UEiraUtilities::OrderByDistance(AActor* OriginActor, TArray<AActor*> InArray, TArray<AActor*>& OutArray)
 {
-	OutArray.Sort([OriginActor](const AActor& A, const AActor& B)
+	InArray.Sort([OriginActor](const AActor& A, const AActor& B)
 	{
 		const float DistanceA = A.GetDistanceTo(OriginActor);
 		const float DistanceB = B.GetDistanceTo(OriginActor);
-		return DistanceA > DistanceB; 
+		return DistanceA < DistanceB; 
 	});
+	OutArray = InArray;
 }
