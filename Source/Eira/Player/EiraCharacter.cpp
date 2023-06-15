@@ -107,6 +107,10 @@ void AEiraCharacter::BeginPlay()
 	QuickInventoryMenu = Cast<UInventoryWidget>(CreateWidget(PlayerController, QuickInventoryMenuClass));
 	QuickInventoryMenu->AddToViewport();
 	QuickInventoryMenu->RemoveFromParent();
+	
+	FullMenu = Cast<UUserWidget>(CreateWidget(PlayerController, FullMenuClass));
+	FullMenu->AddToViewport();
+	FullMenu->RemoveFromParent();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -134,9 +138,12 @@ void AEiraCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 		// Looking
 		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Look, ETriggerEvent::Triggered, this, &AEiraCharacter::Look);
 		
-		// Open/Close Menu
+		// Open/Close Quick Access Inventory
 		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Inventory_Open, ETriggerEvent::Started, this, &AEiraCharacter::OpenQuickInventoryMenu);
 		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Inventory_Close, ETriggerEvent::Completed, this, &AEiraCharacter::CloseQuickInventoryMenu);
+
+		// Open/Close Main Menu
+		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_FullMenu_OpenClose, ETriggerEvent::Started, this, &AEiraCharacter::OpenCloseFullMenu);
 	}
 
 }
@@ -222,6 +229,43 @@ void AEiraCharacter::CloseQuickInventoryMenu()
 	UWidgetBlueprintLibrary::SetInputMode_GameOnly(PlayerController);
 	constexpr const float NormalTime = 1.0f;
 	UGameplayStatics::SetGlobalTimeDilation(this, NormalTime);
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+	{
+		Subsystem->RemoveMappingContext(QuickInventoryMappingContext);
+	}
+}
+
+void AEiraCharacter::OpenCloseFullMenu()
+{
+	if(!bIsFullMenuOpen)
+	{
+		OpenFullMenu();
+	}
+	else
+	{
+		CloseFullMenu();
+	}	
+	bIsFullMenuOpen = bIsFullMenuOpen ? false : true;
+	UE_LOG(LogTemp, Warning, TEXT("bIsFullMenuOpen = %s"), bIsFullMenuOpen ? TEXT("true") : TEXT("false"));
+}
+
+void AEiraCharacter::OpenFullMenu()
+{
+	FullMenu->AddToViewport();
+	// TODO: Is using UWidgetBlueprintLibrary bad practice (there is a more native alternative with `SetInputMode()`)? 
+	UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(PlayerController, FullMenu, EMouseLockMode::LockAlways);
+	UGameplayStatics::SetGamePaused(this, true);
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+	{
+		Subsystem->AddMappingContext(FullMenuMappingContext, 1);
+	}
+}
+
+void AEiraCharacter::CloseFullMenu()
+{
+	QuickInventoryMenu->RemoveFromParent();
+	UWidgetBlueprintLibrary::SetInputMode_GameOnly(PlayerController);
+	UGameplayStatics::SetGamePaused(this, false);
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 	{
 		Subsystem->RemoveMappingContext(QuickInventoryMappingContext);

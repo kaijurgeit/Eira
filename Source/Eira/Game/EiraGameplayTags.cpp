@@ -21,6 +21,7 @@ void FEiraGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(InputTag_Fire, "InputTag.Fire", "Fire input.");
 	AddTag(InputTag_Inventory_Open, "InputTag.Inventory.Open", "Fire input.");
 	AddTag(InputTag_Inventory_Close, "InputTag.Inventory.Close", "Fire input.");
+	AddTag(InputTag_FullMenu_OpenClose, "InputTag.FullMenu.OpenClose", "Fire input.");
 }
 
 void FEiraGameplayTags::AddTag(FGameplayTag& OutTag, const ANSICHAR* TagName, const ANSICHAR* TagComment)

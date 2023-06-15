@@ -40,6 +40,9 @@ class AEiraCharacter : public ACharacter, public IAbilitySystemInterface
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputMappingContext> QuickInventoryMappingContext;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputMappingContext> FullMenuMappingContext;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UEiraAbilitySystemComponent> AbilitySystemComponent;
@@ -93,6 +96,12 @@ public:
 	UPROPERTY()
 	TObjectPtr<UInventoryWidget> QuickInventoryMenu;
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> FullMenuClass;
+
+	UPROPERTY()
+	TObjectPtr<UUserWidget> FullMenu;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float TimeDilation = .25f;
 	
@@ -100,9 +109,14 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<AEiraPlayerController> PlayerController;
+
+	bool bIsFullMenuOpen = false;
 	
 	virtual void GiveAbilities();
 	void OpenQuickInventoryMenu();
 	void CloseQuickInventoryMenu();
+	void OpenCloseFullMenu();
+	void OpenFullMenu();
+	void CloseFullMenu();
 };
 
