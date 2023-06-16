@@ -252,7 +252,8 @@ void AEiraCharacter::OpenCloseFullMenu()
 void AEiraCharacter::OpenFullMenu()
 {
 	FullMenu->AddToViewport();
-	// TODO: Is using UWidgetBlueprintLibrary bad practice (there is a more native alternative with `SetInputMode()`)? 
+	// TODO: Is using UWidgetBlueprintLibrary bad practice (there is a more native alternative with `SetInputMode()`)?
+	PlayerController->SetShowMouseCursor(true); 
 	UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(PlayerController, FullMenu, EMouseLockMode::LockAlways);
 	UGameplayStatics::SetGamePaused(this, true);
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -264,6 +265,7 @@ void AEiraCharacter::OpenFullMenu()
 void AEiraCharacter::CloseFullMenu()
 {
 	QuickInventoryMenu->RemoveFromParent();
+	PlayerController->SetShowMouseCursor(false);
 	UWidgetBlueprintLibrary::SetInputMode_GameOnly(PlayerController);
 	UGameplayStatics::SetGamePaused(this, false);
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
