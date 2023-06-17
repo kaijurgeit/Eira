@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "GameFramework/Actor.h"
-#include "Item.generated.h"
+#include "OldItem.generated.h"
 
 class UMaterialBillboardComponent;
 class APickup;
@@ -28,13 +28,13 @@ enum class EStorageName :uint8
 };
 
 UCLASS()
-class EIRA_API AItem : public AActor
+class EIRA_API AOldItem : public AActor
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	AItem();
+	AOldItem();
 	virtual void Tick(float DeltaTime) override;
 	// virtual  EInteractType Interact() override;
 	void Attach();

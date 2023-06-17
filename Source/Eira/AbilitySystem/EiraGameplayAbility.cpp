@@ -2,3 +2,8 @@
 
 
 #include "EiraGameplayAbility.h"
+
+void UEiraGameplayAbility::OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
+{
+	Super::OnAvatarSet(ActorInfo, Spec);
+}

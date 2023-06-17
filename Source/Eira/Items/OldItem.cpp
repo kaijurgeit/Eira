@@ -1,14 +1,14 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Item.h"
+#include "OldItem.h"
 
 #include "Components/CapsuleComponent.h"
 #include "Components/MaterialBillboardComponent.h"
 
 
 // Sets default values
-AItem::AItem()
+AOldItem::AOldItem()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -16,8 +16,8 @@ AItem::AItem()
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
 	SetRootComponent(StaticMeshComponent);
 	StaticMeshComponent->SetCollisionProfileName(TEXT("Interact"));
-	StaticMeshComponent->OnComponentBeginOverlap.AddDynamic(this, &AItem::ShowIcon);
-	StaticMeshComponent->OnComponentEndOverlap.AddDynamic(this, &AItem::HideIcon);
+	StaticMeshComponent->OnComponentBeginOverlap.AddDynamic(this, &AOldItem::ShowIcon);
+	StaticMeshComponent->OnComponentEndOverlap.AddDynamic(this, &AOldItem::HideIcon);
 
 	IconBillboardComponent = CreateDefaultSubobject<UMaterialBillboardComponent>("Icon Billboard");
 	IconBillboardComponent->SetupAttachment(GetRootComponent());
@@ -31,7 +31,7 @@ AItem::AItem()
 }
 
 // Called when the game starts or when spawned
-void AItem::BeginPlay()
+void AOldItem::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -44,31 +44,31 @@ void AItem::BeginPlay()
 	IconBillboardComponent->SetWorldLocation(IconLocation);
 }
 
-void AItem::ShowIcon(UPrimitiveComponent* OverlappedComponent,
+void AOldItem::ShowIcon(UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
 	const FHitResult& SweepResult)
 {
 	IconBillboardComponent->SetHiddenInGame(false);
 }
 
-void AItem::HideIcon(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void AOldItem::HideIcon(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	IconBillboardComponent->SetHiddenInGame(true);
 }
 
 // Called every frame
-void AItem::Tick(float DeltaTime)
+void AOldItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
-void AItem::Attach()
+void AOldItem::Attach()
 {
 	IconBillboardComponent->SetHiddenInGame(true);	
 	StaticMeshComponent->SetCollisionProfileName(TEXT("NoCollision"));
 }
 
-void AItem::UnAttach()
+void AOldItem::UnAttach()
 {
 	IconBillboardComponent->SetHiddenInGame(false);	
 	StaticMeshComponent->SetCollisionProfileName(TEXT("Interact"));
