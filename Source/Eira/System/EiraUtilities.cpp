@@ -3,7 +3,7 @@
 
 #include "EiraUtilities.h"
 
-void UEiraUtilities::OrderByDistance(AActor* OriginActor, TArray<AActor*> InArray, TArray<AActor*>& OutArray)
+void UEiraUtilities::OrderByDistance(const AActor* OriginActor, TArray<AActor*> InArray, TArray<AActor*>& OutArray)
 {
 	InArray.Sort([OriginActor](const AActor& A, const AActor& B)
 	{

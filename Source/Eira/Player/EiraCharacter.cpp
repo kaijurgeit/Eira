@@ -88,6 +88,39 @@ void AEiraCharacter::OnRep_PlayerState()
 	GiveAbilities();
 }
 
+TArray<UShapeComponent*> AEiraCharacter::GetCollidersThatHaveTags_Implementation(FGameplayTagContainer ColliderTags)
+{
+	TArray<UShapeComponent*> Colliders = TArray<UShapeComponent*>();
+	for (const TPair<FGameplayTag, UShapeComponent*> Pair : TagColliderMap)
+	{
+		if(ColliderTags.HasTag(Pair.Key))
+		{
+			if(IsValid(Pair.Value))
+			{				
+				Colliders.Add(Pair.Value);
+				
+				Pair.Value->SetHiddenInGame(false);
+				Pair.Value->SetGenerateOverlapEvents(true);			
+			}
+		}
+	}
+	return Colliders;
+}
+
+UShapeComponent* AEiraCharacter::GetColliderThatHasTag_Implementation(FGameplayTag ColliderTag)
+{
+	TArray<UShapeComponent*> Colliders = TArray<UShapeComponent*>();
+	for (const TPair<FGameplayTag, UShapeComponent*> Pair : TagColliderMap)
+	{
+		if(ColliderTag == Pair.Key)
+		{
+			return Pair.Value;
+		}
+	}
+	return nullptr;
+}
+
+
 void AEiraCharacter::BeginPlay()
 {
 	// Call the base class  

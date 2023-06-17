@@ -3,27 +3,44 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "IPickupable.h"
 #include "GameFramework/Actor.h"
-#include "System/InteractTarget.h"
+#include "..\System\InteractTargetInterface.h"
 #include "Item.generated.h"
 
+class UMaterialBillboardComponent;
+
 UCLASS()
-class EIRA_API AItem : public AActor, public IInteractTarget
+class EIRA_API AItem : public AActor, public IInteractInterface
 {
 	GENERATED_BODY()
 
-public:
-	// Sets default values for this actor's properties
-	AItem();
-
-	virtual void SetHighlight(bool IsHightlighted) override;
-	virtual void Interact() override;
+private:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, category = "TheGame", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UStaticMeshComponent> StaticMeshComponent;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, category = "TheGame", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterialBillboardComponent> IconBillboardComponent;
 	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	
+public:
+	// Sets default values for this actor's properties
+	AItem();
+	virtual void SetHighlight(bool IsHightlighted) override;
+	virtual void Interact() override;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, category = "TheGame")
+	TObjectPtr<UTexture2D> Icon;
+
+
+	UPROPERTY(EditAnywhere)
+	FInventoryPickup StaticInventory;
+
 };

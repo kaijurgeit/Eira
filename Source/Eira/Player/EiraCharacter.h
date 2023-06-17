@@ -7,6 +7,7 @@
 #include "AbilitySystemInterface.h"
 #include "GameplayTags.h"
 #include "InputActionValue.h"
+#include "System/ColliderTagsInterface.h"
 #include "EiraCharacter.generated.h"
 
 class USphereComponent;
@@ -22,7 +23,7 @@ class AEiraPlayerController;
 class UInventoryWidget;
 
 UCLASS(config=Game)
-class AEiraCharacter : public ACharacter, public IAbilitySystemInterface
+class AEiraCharacter : public ACharacter, public IAbilitySystemInterface, public IColliderTagsInterface
 {
 	GENERATED_BODY()
 
@@ -58,6 +59,8 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
+	virtual TArray<UShapeComponent*> GetCollidersThatHaveTags_Implementation(FGameplayTagContainer ColliderTags) override;	
+	virtual UShapeComponent* GetColliderThatHasTag_Implementation(FGameplayTag ColliderTag) override;
 	
 	/** Effect that initializes our default attributes. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "GAS")
@@ -104,6 +107,9 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float TimeDilation = .25f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TMap<FGameplayTag, TObjectPtr<UShapeComponent>> TagColliderMap;
 	
 private:
 
