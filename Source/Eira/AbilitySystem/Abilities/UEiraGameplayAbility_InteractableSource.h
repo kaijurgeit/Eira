@@ -12,7 +12,7 @@ class IInteractableSource;
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class EIRA_API UUEiraGameplayAbility_InteractableSource : public UEiraGameplayAbility
 {
 	GENERATED_BODY()

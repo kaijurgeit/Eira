@@ -33,7 +33,7 @@ public:
 public:
 	// Sets default values for this actor's properties
 	AItem();
-	virtual void SetHighlight(bool IsHightlighted) override;
+	virtual void Highlight(bool IsHightlighted) override;
 	virtual void Interact() override;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, category = "TheGame")

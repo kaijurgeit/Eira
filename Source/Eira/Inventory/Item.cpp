@@ -21,12 +21,12 @@ AItem::AItem()
 	FMaterialSpriteElement Element;
 	Element.BaseSizeX = 5.f;
 	Element.BaseSizeY = 5.f;
-	IconBillboardComponent->SetElements(TArray<FMaterialSpriteElement>({Element}));
+	IconBillboardComponent->SetElements(TArray({Element}));
 	
 	IconBillboardComponent->SetHiddenInGame(true);
 }
 
-void AItem::SetHighlight(bool IsHightlighted)
+void AItem::Highlight(bool IsHightlighted)
 {	
 	IconBillboardComponent->SetHiddenInGame(!IsHightlighted);
 }
