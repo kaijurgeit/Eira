@@ -6,7 +6,8 @@
 #include "AbilitySystem/EiraGameplayAbility.h"
 #include "EiraGameplayAbility_HighlightInteractable.generated.h"
 
-class IInteractInterface;
+class IInteractableSource;
+class IInteractableTarget;
 /**
  * 
  */
@@ -23,10 +24,15 @@ public:
 public:
 	UFUNCTION(BlueprintCallable)
 	bool BindToAddRemoveOverlappingInteractActors(const FGameplayAbilityActorInfo& ActorInfo, FGameplayTag ColliderTag);
+	UFUNCTION(BlueprintCallable)
+	void SetInteractableSource(const FGameplayAbilityActorInfo ActorInfo);
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ability")
 	bool bActivateAbilityOnGranted = true;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ability")
+	TScriptInterface<IInteractableSource> InteractableSource;
 
 	UFUNCTION(BlueprintCallable)
 	TArray<AActor*> GetNearbyInteractActors();

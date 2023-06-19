@@ -7,7 +7,8 @@
 #include "AbilitySystemInterface.h"
 #include "GameplayTags.h"
 #include "InputActionValue.h"
-#include "System/ColliderTagsInterface.h"
+#include "Interfaces/ColliderTagsInterface.h"
+#include "Interfaces/InteractableSource.h"
 #include "EiraCharacter.generated.h"
 
 class USphereComponent;
@@ -23,7 +24,7 @@ class AEiraPlayerController;
 class UInventoryWidget;
 
 UCLASS(config=Game)
-class AEiraCharacter : public ACharacter, public IAbilitySystemInterface, public IColliderTagsInterface
+class AEiraCharacter : public ACharacter, public IAbilitySystemInterface, public IColliderTagsInterface, public IInteractableSource
 {
 	GENERATED_BODY()
 
@@ -83,6 +84,9 @@ protected:
 
 	/** Handles Jumping */
 	void Input_Jump(const FInputActionValue& InputActionValue);
+	
+	virtual void SetInteractableTarget(TScriptInterface<IInteractableTarget> Value) override;	
+	virtual TScriptInterface<IInteractableTarget> GetInteractableTarget() override;
 
 public:
 	/** Returns CameraBoom subobject **/
@@ -92,6 +96,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UEiraInputConfig> InputConfig;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TScriptInterface<IInteractableTarget> InteractableTarget;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UUserWidget> QuickInventoryMenuClass;
@@ -112,11 +119,11 @@ public:
 	TMap<FGameplayTag, TObjectPtr<UShapeComponent>> TagColliderMap;
 	
 private:
-
 	UPROPERTY()
 	TObjectPtr<AEiraPlayerController> PlayerController;
 
 	bool bIsFullMenuOpen = false;
+
 	
 	virtual void GiveAbilities();
 	void OpenQuickInventoryMenu();

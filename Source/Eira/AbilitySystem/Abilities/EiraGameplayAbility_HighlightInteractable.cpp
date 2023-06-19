@@ -6,9 +6,9 @@
 #include "AbilitySystemComponent.h"
 #include "Components/ShapeComponent.h"
 #include "Engine/Engine.h"
-#include "System/ColliderTagsInterface.h"
+#include "Interfaces/ColliderTagsInterface.h"
+#include "Interfaces/InteractableSource.h"
 #include "System/EiraUtilities.h"
-#include "System/InteractTargetInterface.h"
 
 UEiraGameplayAbility_HighlightInteractable::UEiraGameplayAbility_HighlightInteractable(
 	const FObjectInitializer& ObjectInitializer)
@@ -30,6 +30,15 @@ bool UEiraGameplayAbility_HighlightInteractable::BindToAddRemoveOverlappingInter
 		InteractCollider->OnComponentEndOverlap.AddDynamic(this, &ThisClass::RemoveInteractable);
 	}
 	return true;
+}
+
+void UEiraGameplayAbility_HighlightInteractable::SetInteractableSource(const FGameplayAbilityActorInfo ActorInfo)
+{
+	if(IInteractableSource* PureInteractableSource = Cast<IInteractableSource>(ActorInfo.OwnerActor))
+	{
+		InteractableSource.SetInterface(PureInteractableSource);
+		InteractableSource.SetObject(Cast<UObject>(PureInteractableSource));
+	}
 }
 
 void UEiraGameplayAbility_HighlightInteractable::OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo,

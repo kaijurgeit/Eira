@@ -18,6 +18,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/SphereComponent.h"
+#include "Interfaces/InteractableTarget.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/InventoryWidget.h"
 
@@ -194,6 +195,16 @@ void AEiraCharacter::Input_AbilityInputTagReleased(FGameplayTag InputTag)
 void AEiraCharacter::Input_Jump(const FInputActionValue& InputActionValue)
 {
 	Jump();
+}
+
+void AEiraCharacter::SetInteractableTarget(TScriptInterface<IInteractableTarget> Value)
+{
+	InteractableTarget = Value;
+}
+
+TScriptInterface<IInteractableTarget> AEiraCharacter::GetInteractableTarget()
+{
+	return InteractableTarget;
 }
 
 void AEiraCharacter::Move(const FInputActionValue& Value)
