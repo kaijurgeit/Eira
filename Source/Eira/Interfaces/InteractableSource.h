@@ -4,11 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "InteractTargetInterface.generated.h"
+#include "InteractableSource.generated.h"
 
+class IInteractableTarget;
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI, BlueprintType, meta = (CannotImplementInterfaceInBlueprint))
-class UInteractInterface : public UInterface
+class UInteractableSource : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -16,15 +17,15 @@ class UInteractInterface : public UInterface
 /**
  * 
  */
-class EIRA_API IInteractInterface
+class EIRA_API IInteractableSource
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	UFUNCTION(BlueprintCallable)
-	virtual void SetHighlight(bool IsHightlighted) = 0;
+	virtual void SetInteractableTarget(TScriptInterface<IInteractableTarget> Value) {};
 	
 	UFUNCTION(BlueprintCallable)
-	virtual void Interact() = 0;
+	virtual TScriptInterface<IInteractableTarget> GetInteractableTarget() { return TScriptInterface<IInteractableTarget>(); };
 };
