@@ -85,8 +85,8 @@ protected:
 	/** Handles Jumping */
 	void Input_Jump(const FInputActionValue& InputActionValue);
 	
-	virtual void SetInteractableTarget(TScriptInterface<IInteractableTarget> Value) override;	
-	virtual TScriptInterface<IInteractableTarget> GetInteractableTarget() override;
+	virtual void SetInteractableTargetActor(AActor* Value) override;
+	virtual AActor* GetInteractableTargetActor() override;
 
 public:
 	/** Returns CameraBoom subobject **/
@@ -96,9 +96,6 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UEiraInputConfig> InputConfig;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TScriptInterface<IInteractableTarget> InteractableTarget;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UUserWidget> QuickInventoryMenuClass;
@@ -121,6 +118,9 @@ public:
 private:
 	UPROPERTY()
 	TObjectPtr<AEiraPlayerController> PlayerController;
+
+	UPROPERTY()
+	TObjectPtr<AActor> InteractableTargetActor;
 
 	bool bIsFullMenuOpen = false;
 

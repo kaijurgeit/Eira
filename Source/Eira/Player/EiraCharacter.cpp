@@ -197,14 +197,14 @@ void AEiraCharacter::Input_Jump(const FInputActionValue& InputActionValue)
 	Jump();
 }
 
-void AEiraCharacter::SetInteractableTarget(TScriptInterface<IInteractableTarget> Value)
+void AEiraCharacter::SetInteractableTargetActor(AActor* Value)
 {
-	InteractableTarget = Value;
+	InteractableTargetActor = Value;
 }
 
-TScriptInterface<IInteractableTarget> AEiraCharacter::GetInteractableTarget()
+AActor* AEiraCharacter::GetInteractableTargetActor()
 {
-	return InteractableTarget;
+	return InteractableTargetActor;
 }
 
 void AEiraCharacter::Move(const FInputActionValue& Value)

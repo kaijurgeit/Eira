@@ -32,15 +32,6 @@ bool UEiraGameplayAbility_HighlightInteractable::BindToAddRemoveOverlappingInter
 	return true;
 }
 
-void UEiraGameplayAbility_HighlightInteractable::SetInteractableSource(const FGameplayAbilityActorInfo ActorInfo)
-{
-	if(IInteractableSource* PureInteractableSource = Cast<IInteractableSource>(ActorInfo.OwnerActor))
-	{
-		InteractableSource.SetInterface(PureInteractableSource);
-		InteractableSource.SetObject(Cast<UObject>(PureInteractableSource));
-	}
-}
-
 void UEiraGameplayAbility_HighlightInteractable::OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo,
                                                              const FGameplayAbilitySpec& Spec)
 {
@@ -52,15 +43,6 @@ void UEiraGameplayAbility_HighlightInteractable::OnAvatarSet(const FGameplayAbil
 	}
 }
 
-void UEiraGameplayAbility_HighlightInteractable::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo,
-	const FGameplayAbilitySpec& Spec)
-{
-	Super::OnGiveAbility(ActorInfo, Spec);
-	if(GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, FString(__FUNCTION__));
-	}
-}
 
 TArray<AActor*> UEiraGameplayAbility_HighlightInteractable::GetNearbyInteractActors()
 {

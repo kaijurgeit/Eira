@@ -30,8 +30,6 @@ class EIRA_API UEiraGameplayAbility : public UGameplayAbility
 
 public:
 	EEiraAbilityActivationPolicy GetActivationPolicy() const { return ActivationPolicy; }	
-	virtual void OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
-
 
 protected:	
 	// Defines how this ability is meant to activate.

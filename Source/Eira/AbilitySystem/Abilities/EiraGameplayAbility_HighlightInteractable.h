@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "UEiraGameplayAbility_InteractableSource.h"
 #include "AbilitySystem/EiraGameplayAbility.h"
 #include "EiraGameplayAbility_HighlightInteractable.generated.h"
 
@@ -12,27 +13,21 @@ class IInteractableTarget;
  * 
  */
 UCLASS()
-class EIRA_API UEiraGameplayAbility_HighlightInteractable : public UEiraGameplayAbility
+class EIRA_API UEiraGameplayAbility_HighlightInteractable : public UUEiraGameplayAbility_InteractableSource
 {
 	GENERATED_BODY()
 
 public:
 	UEiraGameplayAbility_HighlightInteractable(const FObjectInitializer& ObjectInitializer);
 	virtual void OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
-	virtual void OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
+
 	
-public:
 	UFUNCTION(BlueprintCallable)
 	bool BindToAddRemoveOverlappingInteractActors(const FGameplayAbilityActorInfo& ActorInfo, FGameplayTag ColliderTag);
-	UFUNCTION(BlueprintCallable)
-	void SetInteractableSource(const FGameplayAbilityActorInfo ActorInfo);
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ability")
-	bool bActivateAbilityOnGranted = true;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ability")
-	TScriptInterface<IInteractableSource> InteractableSource;
+	bool bActivateAbilityOnGranted = true;	
 
 	UFUNCTION(BlueprintCallable)
 	TArray<AActor*> GetNearbyInteractActors();

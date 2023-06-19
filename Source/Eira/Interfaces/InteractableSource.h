@@ -24,8 +24,8 @@ class EIRA_API IInteractableSource
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	UFUNCTION(BlueprintCallable)
-	virtual void SetInteractableTarget(TScriptInterface<IInteractableTarget> Value) {};
+	virtual void SetInteractableTargetActor(AActor* Value) {};
 	
 	UFUNCTION(BlueprintCallable)
-	virtual TScriptInterface<IInteractableTarget> GetInteractableTarget() { return TScriptInterface<IInteractableTarget>(); };
+	virtual AActor* GetInteractableTargetActor() { return nullptr; };
 };
