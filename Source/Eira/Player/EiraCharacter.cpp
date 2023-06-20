@@ -9,7 +9,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Eira/Game/EiraGameplayTags.h"
 #include "Eira/Game/EiraInputComponent.h"
@@ -18,8 +17,6 @@
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/SphereComponent.h"
-#include "Interfaces/InteractableTarget.h"
-#include "Inventory/EiraInventoryManagerComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/InventoryWidget.h"
 
@@ -67,9 +64,6 @@ AEiraCharacter::AEiraCharacter()
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 	AbilitySystemComponent = CreateDefaultSubobject<UEiraAbilitySystemComponent>("AbilitySystemComponent");
-
-	// Inventory
-	InventoryManagerComponent = CreateDefaultSubobject<UEiraInventoryManagerComponent>("InventoryManagerComponent");
 }
 
 UAbilitySystemComponent* AEiraCharacter::GetAbilitySystemComponent() const
