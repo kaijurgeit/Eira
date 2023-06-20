@@ -22,7 +22,7 @@ public:
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable, Const, Abstract)
 class EIRA_API UEiraInventoryItemDefinition : public UObject
 {
 	GENERATED_BODY()

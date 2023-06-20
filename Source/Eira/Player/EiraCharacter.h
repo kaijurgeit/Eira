@@ -22,6 +22,7 @@ class UInputAction;
 class UGameplayAbility;
 class AEiraPlayerController;
 class UInventoryWidget;
+class UEiraInventoryManagerComponent;
 
 UCLASS(config=Game)
 class AEiraCharacter : public ACharacter, public IAbilitySystemInterface, public IColliderTagsInterface, public IInteractableSource
@@ -45,12 +46,15 @@ class AEiraCharacter : public ACharacter, public IAbilitySystemInterface, public
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputMappingContext> FullMenuMappingContext;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USphereComponent> InteractionSphere;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UEiraAbilitySystemComponent> AbilitySystemComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<USphereComponent> InteractionSphere;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UEiraInventoryManagerComponent> InventoryManagerComponent;
 
 	UPROPERTY()
 	const UEiraAttributeSet* Attributes;

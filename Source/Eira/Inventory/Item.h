@@ -3,15 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "IPickupable.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/InteractableTarget.h"
+#include "Interfaces/IPickupable.h"
 #include "Item.generated.h"
 
 class UMaterialBillboardComponent;
 
 UCLASS()
-class EIRA_API AItem : public AActor, public IInteractableTarget
+class EIRA_API AItem : public AActor, public IInteractableTarget, public IPickupable
 {
 	GENERATED_BODY()
 
@@ -35,6 +35,7 @@ public:
 	AItem();
 	virtual void Highlight(bool IsHightlighted) override;
 	virtual void Interact() override;
+	virtual FInventoryPickup GetPickupInventory() const override;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, category = "TheGame")
 	TObjectPtr<UTexture2D> Icon;

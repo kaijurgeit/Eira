@@ -6,6 +6,12 @@
 #include "UObject/Interface.h"
 #include "InteractableTarget.generated.h"
 
+UENUM()
+enum class EInteractType
+{
+	Pickup
+};
+
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI, BlueprintType, meta = (CannotImplementInterfaceInBlueprint))
 class UInteractableTarget : public UInterface
