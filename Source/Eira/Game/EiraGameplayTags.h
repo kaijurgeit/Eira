@@ -27,6 +27,7 @@ public:
 	FGameplayTag InputTag_Fire;
 	FGameplayTag InputTag_Inventory_Open;
 	FGameplayTag InputTag_Inventory_Close;
+	FGameplayTag InputTag_FullMenu_OpenClose;
 
 protected:
 

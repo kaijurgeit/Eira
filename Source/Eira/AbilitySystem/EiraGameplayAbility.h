@@ -23,7 +23,7 @@ enum class EEiraAbilityActivationPolicy : uint8
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class EIRA_API UEiraGameplayAbility : public UGameplayAbility
 {
 	GENERATED_BODY()

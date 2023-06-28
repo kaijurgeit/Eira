@@ -9,7 +9,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Eira/Game/EiraGameplayTags.h"
 #include "Eira/Game/EiraInputComponent.h"
@@ -88,6 +87,39 @@ void AEiraCharacter::OnRep_PlayerState()
 	GiveAbilities();
 }
 
+TArray<UShapeComponent*> AEiraCharacter::GetCollidersThatHaveTags_Implementation(FGameplayTagContainer ColliderTags)
+{
+	TArray<UShapeComponent*> Colliders = TArray<UShapeComponent*>();
+	for (const TPair<FGameplayTag, UShapeComponent*> Pair : TagColliderMap)
+	{
+		if(ColliderTags.HasTag(Pair.Key))
+		{
+			if(IsValid(Pair.Value))
+			{				
+				Colliders.Add(Pair.Value);
+				
+				Pair.Value->SetHiddenInGame(false);
+				Pair.Value->SetGenerateOverlapEvents(true);			
+			}
+		}
+	}
+	return Colliders;
+}
+
+UShapeComponent* AEiraCharacter::GetColliderThatHasTag_Implementation(FGameplayTag ColliderTag)
+{
+	TArray<UShapeComponent*> Colliders = TArray<UShapeComponent*>();
+	for (const TPair<FGameplayTag, UShapeComponent*> Pair : TagColliderMap)
+	{
+		if(ColliderTag == Pair.Key)
+		{
+			return Pair.Value;
+		}
+	}
+	return nullptr;
+}
+
+
 void AEiraCharacter::BeginPlay()
 {
 	// Call the base class  
@@ -107,6 +139,10 @@ void AEiraCharacter::BeginPlay()
 	QuickInventoryMenu = Cast<UInventoryWidget>(CreateWidget(PlayerController, QuickInventoryMenuClass));
 	QuickInventoryMenu->AddToViewport();
 	QuickInventoryMenu->RemoveFromParent();
+	
+	FullMenu = Cast<UUserWidget>(CreateWidget(PlayerController, FullMenuClass));
+	FullMenu->AddToViewport();
+	FullMenu->RemoveFromParent();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -134,9 +170,12 @@ void AEiraCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 		// Looking
 		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Look, ETriggerEvent::Triggered, this, &AEiraCharacter::Look);
 		
-		// Open/Close Menu
+		// Open/Close Quick Access Inventory
 		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Inventory_Open, ETriggerEvent::Started, this, &AEiraCharacter::OpenQuickInventoryMenu);
 		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Inventory_Close, ETriggerEvent::Completed, this, &AEiraCharacter::CloseQuickInventoryMenu);
+
+		// Open/Close Main Menu
+		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_FullMenu_OpenClose, ETriggerEvent::Started, this, &AEiraCharacter::OpenCloseFullMenu);
 	}
 
 }
@@ -154,6 +193,16 @@ void AEiraCharacter::Input_AbilityInputTagReleased(FGameplayTag InputTag)
 void AEiraCharacter::Input_Jump(const FInputActionValue& InputActionValue)
 {
 	Jump();
+}
+
+void AEiraCharacter::SetInteractableTargetActor(AActor* Value)
+{
+	InteractableTargetActor = Value;
+}
+
+AActor* AEiraCharacter::GetInteractableTargetActor()
+{
+	return InteractableTargetActor;
 }
 
 void AEiraCharacter::Move(const FInputActionValue& Value)
@@ -222,6 +271,45 @@ void AEiraCharacter::CloseQuickInventoryMenu()
 	UWidgetBlueprintLibrary::SetInputMode_GameOnly(PlayerController);
 	constexpr const float NormalTime = 1.0f;
 	UGameplayStatics::SetGlobalTimeDilation(this, NormalTime);
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+	{
+		Subsystem->RemoveMappingContext(QuickInventoryMappingContext);
+	}
+}
+
+void AEiraCharacter::OpenCloseFullMenu()
+{
+	if(!bIsFullMenuOpen)
+	{
+		OpenFullMenu();
+	}
+	else
+	{
+		CloseFullMenu();
+	}	
+	bIsFullMenuOpen = bIsFullMenuOpen ? false : true;
+	UE_LOG(LogTemp, Warning, TEXT("bIsFullMenuOpen = %s"), bIsFullMenuOpen ? TEXT("true") : TEXT("false"));
+}
+
+void AEiraCharacter::OpenFullMenu()
+{
+	FullMenu->AddToViewport();
+	// TODO: Is using UWidgetBlueprintLibrary bad practice (there is a more native alternative with `SetInputMode()`)?
+	PlayerController->SetShowMouseCursor(true); 
+	UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(PlayerController, FullMenu, EMouseLockMode::LockAlways);
+	UGameplayStatics::SetGamePaused(this, true);
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+	{
+		Subsystem->AddMappingContext(FullMenuMappingContext, 1);
+	}
+}
+
+void AEiraCharacter::CloseFullMenu()
+{
+	QuickInventoryMenu->RemoveFromParent();
+	PlayerController->SetShowMouseCursor(false);
+	UWidgetBlueprintLibrary::SetInputMode_GameOnly(PlayerController);
+	UGameplayStatics::SetGamePaused(this, false);
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 	{
 		Subsystem->RemoveMappingContext(QuickInventoryMappingContext);

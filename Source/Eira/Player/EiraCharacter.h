@@ -7,6 +7,8 @@
 #include "AbilitySystemInterface.h"
 #include "GameplayTags.h"
 #include "InputActionValue.h"
+#include "Interfaces/ColliderTagsInterface.h"
+#include "Interfaces/InteractableSource.h"
 #include "EiraCharacter.generated.h"
 
 class USphereComponent;
@@ -20,9 +22,10 @@ class UInputAction;
 class UGameplayAbility;
 class AEiraPlayerController;
 class UInventoryWidget;
+class UEiraInventoryManagerComponent;
 
 UCLASS(config=Game)
-class AEiraCharacter : public ACharacter, public IAbilitySystemInterface
+class AEiraCharacter : public ACharacter, public IAbilitySystemInterface, public IColliderTagsInterface, public IInteractableSource
 {
 	GENERATED_BODY()
 
@@ -40,12 +43,16 @@ class AEiraCharacter : public ACharacter, public IAbilitySystemInterface
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputMappingContext> QuickInventoryMappingContext;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputMappingContext> FullMenuMappingContext;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USphereComponent> InteractionSphere;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UEiraAbilitySystemComponent> AbilitySystemComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<USphereComponent> InteractionSphere;
 
 	UPROPERTY()
 	const UEiraAttributeSet* Attributes;
@@ -55,6 +62,8 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
+	virtual TArray<UShapeComponent*> GetCollidersThatHaveTags_Implementation(FGameplayTagContainer ColliderTags) override;	
+	virtual UShapeComponent* GetColliderThatHasTag_Implementation(FGameplayTag ColliderTag) override;
 	
 	/** Effect that initializes our default attributes. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "GAS")
@@ -77,6 +86,9 @@ protected:
 
 	/** Handles Jumping */
 	void Input_Jump(const FInputActionValue& InputActionValue);
+	
+	virtual void SetInteractableTargetActor(AActor* Value) override;
+	virtual AActor* GetInteractableTargetActor() override;
 
 public:
 	/** Returns CameraBoom subobject **/
@@ -93,16 +105,33 @@ public:
 	UPROPERTY()
 	TObjectPtr<UInventoryWidget> QuickInventoryMenu;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float TimeDilation = .25f;
-	
-private:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> FullMenuClass;
 
 	UPROPERTY()
+	TObjectPtr<UUserWidget> FullMenu;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float TimeDilation = .25f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TMap<FGameplayTag, TObjectPtr<UShapeComponent>> TagColliderMap;
+	
+private:
+	UPROPERTY()
 	TObjectPtr<AEiraPlayerController> PlayerController;
+
+	UPROPERTY()
+	TObjectPtr<AActor> InteractableTargetActor;
+
+	bool bIsFullMenuOpen = false;
+
 	
 	virtual void GiveAbilities();
 	void OpenQuickInventoryMenu();
 	void CloseQuickInventoryMenu();
+	void OpenCloseFullMenu();
+	void OpenFullMenu();
+	void CloseFullMenu();
 };
 

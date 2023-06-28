@@ -15,5 +15,5 @@ class EIRA_API UEiraUtilities : public UBlueprintFunctionLibrary
 
 public:
 	UFUNCTION(BlueprintCallable, Category = Helpers)
-	static void OrderByDistance(AActor* OriginActor, TArray<AActor*> InArray, TArray<AActor*>& OutArray);
+	static void OrderByDistance(const AActor* OriginActor, TArray<AActor*> InArray, TArray<AActor*>& OutArray);
 };
