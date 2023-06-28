@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystem/EiraGameplayAbility.h"
 #include "UObject/Object.h"
-#include "UEiraGameplayAbility_InteractableSource.generated.h"
+#include "EiraGameplayAbility_Interactable.generated.h"
 
 class IInteractableSource;
 
@@ -13,7 +13,7 @@ class IInteractableSource;
  * 
  */
 UCLASS(Abstract)
-class EIRA_API UUEiraGameplayAbility_InteractableSource : public UEiraGameplayAbility
+class EIRA_API UEiraGameplayAbility_Interactable : public UEiraGameplayAbility
 {
 	GENERATED_BODY()
 

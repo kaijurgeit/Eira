@@ -1,12 +1,12 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "UEiraGameplayAbility_InteractableSource.h"
+#include "EiraGameplayAbility_Interactable.h"
 
 #include "Abilities/GameplayAbilityTypes.h"
 #include "Interfaces/InteractableSource.h"
 
-void UUEiraGameplayAbility_InteractableSource::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+void UEiraGameplayAbility_Interactable::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData)
 {
@@ -14,7 +14,7 @@ void UUEiraGameplayAbility_InteractableSource::ActivateAbility(const FGameplayAb
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
-void UUEiraGameplayAbility_InteractableSource::SetInteractableSource(const FGameplayAbilityActorInfo* ActorInfo)
+void UEiraGameplayAbility_Interactable::SetInteractableSource(const FGameplayAbilityActorInfo* ActorInfo)
 {
 	if(IInteractableSource* PureInteractableSource = Cast<IInteractableSource>(ActorInfo->OwnerActor))
 	{
