@@ -3,6 +3,8 @@
 
 #include "InventoryComponent.h"
 
+#include "InventoryItemDefinition.h"
+
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
@@ -33,4 +35,20 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 	// ...
 }
+
+void UInventoryComponent::AddItemDefinition(FInventoryEntry PickupInventoryEntry)
+{
+	for (FInventoryEntry& Entry : Entries)
+	{
+		if(Entry.ItemDef == PickupInventoryEntry.ItemDef)
+		{
+			Entry.StackCount += PickupInventoryEntry.StackCount;			
+			UpdateInventory.Broadcast(Entry);
+			return;
+		}
+	}
+	Entries.Add(PickupInventoryEntry);
+	UpdateInventory.Broadcast(PickupInventoryEntry);
+}
+
 

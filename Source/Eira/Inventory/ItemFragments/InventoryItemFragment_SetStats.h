@@ -3,14 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InventoryItemFragment.h"
 #include "UObject/Object.h"
-#include "InventoryItemFragment.generated.h"
+#include "InventoryItemFragment_SetStats.generated.h"
 
 /**
  * 
  */
-UCLASS(DefaultToInstanced, EditInlineNew, Abstract)
-class EIRA_API UInventoryItemFragment : public UObject
+UCLASS()
+class EIRA_API UInventoryItemFragment_SetStats : public UInventoryItemFragment
 {
 	GENERATED_BODY()
 };

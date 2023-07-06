@@ -10,12 +10,14 @@ class UInventoryItemFragment;
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable, Const, Abstract)
 class EIRA_API UInventoryItemDefinition : public UObject
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Inventory)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Inventory, Instanced)
 	TArray<TObjectPtr<UInventoryItemFragment>> Fragments;
+
+	UInventoryItemFragment* FindFragmentByClass(TSubclassOf<UInventoryItemFragment> FragmentClass) const;
 };

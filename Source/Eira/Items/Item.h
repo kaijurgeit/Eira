@@ -5,12 +5,13 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/InteractableTarget.h"
+#include "Interfaces/Pickupable.h"
 #include "Item.generated.h"
 
 class UMaterialBillboardComponent;
 
 UCLASS()
-class EIRA_API AItem : public AActor, public IInteractableTarget
+class EIRA_API AItem : public AActor, public IInteractableTarget, public IPickupable
 {
 	GENERATED_BODY()
 
@@ -37,4 +38,9 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, category = "TheGame")
 	TObjectPtr<UTexture2D> Icon;
+
+	virtual TArray<FInventoryEntry> GetPickupInventory() const override;
+	
+	UPROPERTY(EditAnywhere)
+	TArray<FInventoryEntry> StaticInventory;
 };

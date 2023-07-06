@@ -4,22 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Interfaces/Pickupable.h"
 #include "InventoryComponent.generated.h"
 
 class UInventoryItemDefinition;
 
-USTRUCT(BlueprintType)
-struct FInventoryEntry
-{
-	GENERATED_BODY()
-
-private:
-	UPROPERTY()
-	TSubclassOf<UInventoryItemDefinition> ItemDef = nullptr;
-	
-	UPROPERTY()
-	int32 StackCount = 0;
-};
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateInventory, FInventoryEntry, InventoryEntry);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class EIRA_API UInventoryComponent : public UActorComponent
@@ -30,6 +20,9 @@ public:
 	// Sets default values for this component's properties
 	UInventoryComponent();
 
+	UPROPERTY(BlueprintAssignable)
+	FUpdateInventory UpdateInventory;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -38,6 +31,8 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
+
+	void AddItemDefinition(FInventoryEntry PickupInventoryEntry);
 
 private:
 	UPROPERTY()

@@ -57,7 +57,6 @@ class AEiraCharacter : public ACharacter, public IAbilitySystemInterface, public
 	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInventoryComponent> InventoryComponent;
 
-
 	UPROPERTY()
 	const UEiraAttributeSet* Attributes;
 

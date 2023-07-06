@@ -36,6 +36,10 @@ void AItem::Interact()
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 }
 
+TArray<FInventoryEntry> AItem::GetPickupInventory() const
+{
+	return StaticInventory;
+}
 
 // Called when the game starts or when spawned
 void AItem::BeginPlay()
