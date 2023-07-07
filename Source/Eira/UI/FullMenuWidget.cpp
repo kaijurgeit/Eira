@@ -23,5 +23,5 @@ void UFullMenuWidget::NativeConstruct()
 
 void UFullMenuWidget::UpdateInventory(FInventoryEntry InventoryEntry)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s -> %i : %s"), *FString(__FUNCTION__), InventoryEntry.StackCount, *InventoryEntry.ItemDef->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("%s -> %i : %s"), *FString(__FUNCTION__), InventoryEntry.Count, *InventoryEntry.ItemDef->GetName());
 }

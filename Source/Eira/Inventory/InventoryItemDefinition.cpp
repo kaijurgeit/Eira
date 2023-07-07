@@ -8,7 +8,7 @@
 UInventoryItemFragment* UInventoryItemDefinition::FindFragmentByClass(
 	TSubclassOf<UInventoryItemFragment> FragmentClass) const
 {
-	if(!FragmentClass) { return nullptr; }		
+	if(!FragmentClass) { return nullptr; }
 	
 	for (UInventoryItemFragment* Fragment : Fragments)
 	{

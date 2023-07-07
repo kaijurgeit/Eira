@@ -17,10 +17,10 @@ struct FInventoryEntry
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<UInventoryItemDefinition> ItemDef = nullptr;
+	TObjectPtr<UInventoryItemDefinition> ItemDef = nullptr;
 	
 	UPROPERTY(EditAnywhere)
-	int32 StackCount = 0;
+	int32 Count = 0;
 };
 
 UINTERFACE(MinimalAPI, BlueprintType, meta = (CannotImplementInterfaceInBlueprint))

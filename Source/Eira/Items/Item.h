@@ -10,6 +10,18 @@
 
 class UMaterialBillboardComponent;
 
+USTRUCT()
+struct FInventoryClassEntry
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UInventoryItemDefinition> ItemDef = nullptr;
+	
+	UPROPERTY(EditAnywhere)
+	int32 Count = 0;
+};
+
 UCLASS()
 class EIRA_API AItem : public AActor, public IInteractableTarget, public IPickupable
 {
@@ -42,5 +54,5 @@ public:
 	virtual TArray<FInventoryEntry> GetPickupInventory() const override;
 	
 	UPROPERTY(EditAnywhere)
-	TArray<FInventoryEntry> StaticInventory;
+	TArray<FInventoryClassEntry> StaticInventory;
 };

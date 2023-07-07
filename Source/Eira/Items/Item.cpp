@@ -4,6 +4,7 @@
 #include "Item.h"
 
 #include "Components/MaterialBillboardComponent.h"
+#include "Inventory/InventoryItemDefinition.h"
 
 
 // Sets default values
@@ -38,7 +39,16 @@ void AItem::Interact()
 
 TArray<FInventoryEntry> AItem::GetPickupInventory() const
 {
-	return StaticInventory;
+	TArray<FInventoryEntry> PickupInventory;
+	for (FInventoryClassEntry Entry : StaticInventory)
+	{
+		FInventoryEntry InventoryEntry;
+		InventoryEntry.ItemDef = NewObject<UInventoryItemDefinition>(Entry.ItemDef);
+		InventoryEntry.Count =  Entry.Count;
+		
+		PickupInventory.Add(InventoryEntry);
+	}
+	return PickupInventory;
 }
 
 // Called when the game starts or when spawned

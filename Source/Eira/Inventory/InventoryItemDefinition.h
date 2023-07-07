@@ -17,7 +17,8 @@ class EIRA_API UInventoryItemDefinition : public UObject
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Inventory, Instanced)
-	TArray<TObjectPtr<UInventoryItemFragment>> Fragments;
+	TArray<TObjectPtr<UInventoryItemFragment>> Fragments = TArray<TObjectPtr<UInventoryItemFragment>>();
 
+	UFUNCTION(BlueprintCallable)
 	UInventoryItemFragment* FindFragmentByClass(TSubclassOf<UInventoryItemFragment> FragmentClass) const;
 };

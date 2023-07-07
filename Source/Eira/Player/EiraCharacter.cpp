@@ -161,8 +161,8 @@ void AEiraCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 
 		const FEiraGameplayTags GameplayTags = FEiraGameplayTags::Get();
 
-		TArray<uint32> BindHadles;
-		EiraIC->BindAbilityActions(InputConfig, this, &AEiraCharacter::Input_AbilityInputTagPressed, &AEiraCharacter::Input_AbilityInputTagReleased, BindHadles);
+		TArray<uint32> BindHandles;
+		EiraIC->BindAbilityActions(InputConfig, this, &AEiraCharacter::Input_AbilityInputTagPressed, &AEiraCharacter::Input_AbilityInputTagReleased, BindHandles);
 		
 		// Jumping
 		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Jump, ETriggerEvent::Triggered, this, &AEiraCharacter::Input_Jump);

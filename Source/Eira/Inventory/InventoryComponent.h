@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Interfaces/Pickupable.h"
+#include "ItemFragments/UInventoryFragment_InventoryEntryLayout.h"
+
 #include "InventoryComponent.generated.h"
 
 class UInventoryItemDefinition;
@@ -31,10 +33,15 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
+	FInventoryEntry* GetOrCreateEntry(UInventoryItemDefinition* PickupItem, int32 FreeStacksInGroup);
+	// FInventoryEntry& GetExistingEntry(FInventoryEntry PickupEntry);
 
-	void AddItemDefinition(FInventoryEntry PickupInventoryEntry);
+	void AddItemDefinition(FInventoryEntry PickupEntry);
 
 private:
 	UPROPERTY()
 	TArray<FInventoryEntry> Entries;
+	
+	UPROPERTY()
+	TMap<EInventoryGroup, int32> FreeStacks = {{ EInventoryGroup::Resources, 6 }};
 };
