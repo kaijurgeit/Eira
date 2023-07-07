@@ -1,9 +1,9 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "InventoryItemDefinition.h"
 
 #include "ItemFragments/InventoryItemFragment.h"
+
+UE_DISABLE_OPTIMIZATION
 
 UInventoryItemFragment* UInventoryItemDefinition::FindFragmentByClass(
 	TSubclassOf<UInventoryItemFragment> FragmentClass) const

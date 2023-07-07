@@ -10,7 +10,7 @@ class UInventoryItemFragment;
 /**
  * 
  */
-UCLASS(Blueprintable, Const, Abstract)
+UCLASS(Blueprintable)
 class EIRA_API UInventoryItemDefinition : public UObject
 {
 	GENERATED_BODY()

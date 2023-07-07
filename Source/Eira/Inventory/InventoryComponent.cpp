@@ -1,10 +1,9 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "InventoryComponent.h"
-
 #include "InventoryItemDefinition.h"
-#include "Elements/Framework/TypedElementSelectionSet.h"
+
+UE_DISABLE_OPTIMIZATION
 
 
 // Sets default values for this component's properties
@@ -76,7 +75,11 @@ void UInventoryComponent::AddItemDefinition(FInventoryEntry PickupEntry)
 	const UUInventoryFragment_InventoryEntryLayout* EntryLayout = Cast<UUInventoryFragment_InventoryEntryLayout>(
 		PickupEntry.ItemDef->FindFragmentByClass(UUInventoryFragment_InventoryEntryLayout::StaticClass()));
 
-	if(!EntryLayout) { return; }
+	if(!EntryLayout)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s -> %s"), *FString(__FUNCTION__), *FString("Inventory Full"));
+		return;
+	}
 
 	FInventoryEntry* InventoryEntry = GetOrCreateEntry(PickupEntry.ItemDef, FreeStacks[EntryLayout->InventoryGroup]);
 	
@@ -95,10 +98,12 @@ void UInventoryComponent::AddItemDefinition(FInventoryEntry PickupEntry)
 	InventoryEntry->Count = (TotalItemCount > TotalCountFree) ? TotalCountFree : TotalItemCount;
 
 	// Update Free Stacks
-	FreeStacks[EntryLayout->InventoryGroup] -= (InventoryEntry->Count - OldItemCount) / EntryLayout->StackCountMax;
+	FreeStacks[EntryLayout->InventoryGroup] = FreeStacks[EntryLayout->InventoryGroup] - (InventoryEntry->Count - OldItemCount) / EntryLayout->StackCountMax;
 
 	// How many items did not fit into the inventory?
 	int32 RestCount = FMath::Max(0, TotalItemCount - TotalCountFree);
+	
+	UE_LOG(LogTemp, Warning, TEXT("%s -> Count: %i; Free Stacks: %i; Rest: %i"), *FString(__FUNCTION__), InventoryEntry->Count, FreeStacks[EntryLayout->InventoryGroup], RestCount);
 }
 
 

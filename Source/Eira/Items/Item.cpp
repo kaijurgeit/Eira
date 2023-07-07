@@ -42,8 +42,11 @@ TArray<FInventoryEntry> AItem::GetPickupInventory() const
 	TArray<FInventoryEntry> PickupInventory;
 	for (FInventoryClassEntry Entry : StaticInventory)
 	{
+		if(!Entry.ItemDef) { return TArray<FInventoryEntry>(); }
+		
 		FInventoryEntry InventoryEntry;
 		InventoryEntry.ItemDef = NewObject<UInventoryItemDefinition>(Entry.ItemDef);
+		InventoryEntry.ItemDef->Fragments = GetDefault<UInventoryItemDefinition>(Entry.ItemDef)->Fragments;
 		InventoryEntry.Count =  Entry.Count;
 		
 		PickupInventory.Add(InventoryEntry);
