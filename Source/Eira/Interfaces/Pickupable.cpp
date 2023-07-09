@@ -3,6 +3,7 @@
 
 #include "Pickupable.h"
 #include "GameFramework/Actor.h"
+#include "Inventory/InventoryItemDefinition.h"
 #include "Inventory/InventoryComponent.h"
 
 class UActorComponent;
@@ -31,11 +32,18 @@ TScriptInterface<IPickupable> UPickupableStatics::GetFirstPickupableFromActor(AA
 void UPickupableStatics::AddPickupToInventory(UInventoryComponent* InventoryComponent, TScriptInterface<IPickupable> Pickup)
 {
 	if(InventoryComponent && Pickup)
-	{		
-		TArray<FInventoryEntry> PickupInventoryEntries = Pickup->GetPickupInventory();
-		for (FInventoryEntry& PickupInventoryEntry : PickupInventoryEntries)
+	{
+		TArray<FInventoryClassEntry>& PickupInventoryClassEntries = Pickup->GetPickupInventory();
+		// TArray<FInventoryEntry> PickupInventoryEntries = Pickup->GetPickupInventory();
+		for (FInventoryClassEntry& PickupClassEntry : PickupInventoryClassEntries)
 		{
-			InventoryComponent->AddItemDefinition(PickupInventoryEntry);
+			FInventoryEntry PickupEntry;
+			PickupEntry.ItemDef = NewObject<UInventoryItemDefinition>(PickupClassEntry.ItemDef);
+			PickupEntry.ItemDef->Fragments = GetDefault<UInventoryItemDefinition>(PickupClassEntry.ItemDef)->Fragments;
+			PickupEntry.Count =  PickupClassEntry.Count;
+			
+			InventoryComponent->AddItemDefinition(PickupEntry);
+			PickupClassEntry.Count = PickupEntry.Count;
 		}
 	}
 }

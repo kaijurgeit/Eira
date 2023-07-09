@@ -12,6 +12,18 @@ class UInventoryComponent;
 class UInventoryItemDefinition;
 
 USTRUCT(BlueprintType)
+struct FInventoryClassEntry
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UInventoryItemDefinition> ItemDef = nullptr;
+	
+	UPROPERTY(EditAnywhere)
+	int32 Count = 0;
+};
+
+USTRUCT(BlueprintType)
 struct FInventoryEntry
 {
 	GENERATED_BODY()
@@ -39,10 +51,7 @@ class EIRA_API IPickupable
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	UFUNCTION(BlueprintCallable)
-	virtual TArray<FInventoryEntry> GetPickupInventory() const = 0;
-	
-	UFUNCTION(BlueprintCallable)
-	virtual void SetCount(TSubclassOf<UInventoryItemDefinition> ItemDef, int32 value) = 0;
+	virtual TArray<FInventoryClassEntry>& GetPickupInventory() = 0;	
 };
 
 UCLASS()

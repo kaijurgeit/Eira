@@ -10,18 +10,6 @@
 
 class UMaterialBillboardComponent;
 
-USTRUCT()
-struct FInventoryClassEntry
-{
-	GENERATED_BODY()
-	
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UInventoryItemDefinition> ItemDef = nullptr;
-	
-	UPROPERTY(EditAnywhere)
-	int32 Count = 0;
-};
-
 UCLASS()
 class EIRA_API AItem : public AActor, public IInteractableTarget, public IPickupable
 {
@@ -51,8 +39,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, category = "TheGame")
 	TObjectPtr<UTexture2D> Icon;
 
-	virtual TArray<FInventoryEntry> GetPickupInventory() const override;	
-	virtual void SetCount(TSubclassOf<UInventoryItemDefinition> ItemDef, int32 value) override;
+	virtual TArray<FInventoryClassEntry>& GetPickupInventory() override;	
 	
 	
 	UPROPERTY(EditAnywhere)

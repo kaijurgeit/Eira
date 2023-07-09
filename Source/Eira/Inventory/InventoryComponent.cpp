@@ -3,7 +3,7 @@
 #include "InventoryComponent.h"
 #include "InventoryItemDefinition.h"
 
-UE_DISABLE_OPTIMIZATION
+// UE_DISABLE_OPTIMIZATION
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
