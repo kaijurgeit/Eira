@@ -5,7 +5,6 @@
 
 UE_DISABLE_OPTIMIZATION
 
-
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
 {
@@ -23,7 +22,7 @@ void UInventoryComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
+	FreeStacksPerGroup = TMap<EInventoryGroup, int32>(MaxStacksPerGroup);
 }
 
 
@@ -69,6 +68,7 @@ FInventoryEntry* UInventoryComponent::GetOrCreateEntry(UInventoryItemDefinition*
 	}
 	
 	InventoryEntry = &Entries.AddDefaulted_GetRef();
+	InventoryEntry->ItemDef = PickupItem;
 	FreeStacksPerGroup[Group] -= 1;
 	return InventoryEntry;
 }
@@ -77,24 +77,26 @@ FInventoryEntry* UInventoryComponent::GetOrCreateEntry(UInventoryItemDefinition*
 int32 UInventoryComponent::AddItems(FInventoryEntry* Entry, const EInventoryGroup Group, const int32 MaxItemsPerStack, const int32 MaxItemsTotal, const int32 PickupItemCount)
 {
 	// How much space is left in total considering the partially filled Stack and all empty Stacks in the Group?
-	const int32 FreeSpaceInStack = MaxItemsPerStack - Entry->Count;	
+	const int32 FreeSpaceInStack = MaxItemsPerStack - (Entry->Count % MaxItemsPerStack);
 	int32 FreeSpaceInTotal = FreeStacksPerGroup[Group] * MaxItemsPerStack + FreeSpaceInStack;
+	FreeSpaceInTotal = ((FreeStacksPerGroup[Group] == 0) && (FreeSpaceInTotal == 10)) ? 0 : FreeSpaceInTotal;
 	// MaxItemsTotal == 0 means that there is now limit regarding total item count and all free space can be used
 	FreeSpaceInTotal = (MaxItemsTotal == 0) ? FreeSpaceInTotal : FMath::Min(FreeSpaceInTotal, MaxItemsTotal);
 
 	// Add to Inventory
-	const int32 NewItemCount = (PickupItemCount > FreeSpaceInTotal) ? FreeSpaceInTotal : PickupItemCount;
-	const int32 ItemsAdded = NewItemCount - Entry->Count;	
+	const int32 OldCount = Entry->Count; 
+	const int32 NewItemCount = (PickupItemCount > FreeSpaceInTotal) ? OldCount + FreeSpaceInTotal : OldCount + PickupItemCount;
 	Entry->Count = NewItemCount;
 
 	// Update FreeStacksPerGroup
-	const int32 NewStacksUsed = (NewItemCount / MaxItemsPerStack) - (Entry->Count / MaxItemsPerStack);
+	const int32 NewStacksUsed = ((NewItemCount - 1) / MaxItemsPerStack) - ((OldCount - 1) / MaxItemsPerStack);
 	FreeStacksPerGroup[Group] -= NewStacksUsed;
-	
+
+	const int32 ItemsAdded = NewItemCount - OldCount;
 	return ItemsAdded;
 }
 
-void UInventoryComponent::AddItemDefinition(FInventoryEntry PickupEntry)
+void UInventoryComponent::AddItemDefinition(FInventoryEntry& PickupEntry)
 {
 	// Get Item Layout and Group
 	const UUInventoryFragment_InventoryEntryLayout* Layout = Cast<UUInventoryFragment_InventoryEntryLayout>(
@@ -118,9 +120,9 @@ void UInventoryComponent::AddItemDefinition(FInventoryEntry PickupEntry)
 	const int32 ItemsAdded = AddItems(Entry, Layout->Group, Layout->MaxItemsPerStack, Layout->MaxItemsTotal, PickupEntry.Count);
 	
 	// How many items did not fit into the inventory?
-	const int32 RestCount = FMath::Max(0, PickupEntry.Count - ItemsAdded);
+	PickupEntry.Count -= ItemsAdded;
 	
-	UE_LOG(LogTemp, Warning, TEXT("%s -> Count: %i; Free Stacks: %i; Rest: %i"), *FString(__FUNCTION__), Entry->Count, FreeStacksPerGroup[Layout->Group], RestCount);
+	UE_LOG(LogTemp, Warning, TEXT("%s -> Count: %i; Free Stacks: %i; Rest: %i"), *FString(__FUNCTION__), Entry->Count, FreeStacksPerGroup[Layout->Group], PickupEntry.Count);
 }
 
 

@@ -28,13 +28,12 @@ TScriptInterface<IPickupable> UPickupableStatics::GetFirstPickupableFromActor(AA
 }
 
 // Add default functionality here for any IPickupable functions that are not pure virtual.
-void UPickupableStatics::AddPickupToInventory(UInventoryComponent* InventoryComponent,
-	TScriptInterface<IPickupable> Pickup)
+void UPickupableStatics::AddPickupToInventory(UInventoryComponent* InventoryComponent, TScriptInterface<IPickupable> Pickup)
 {
 	if(InventoryComponent && Pickup)
 	{		
-		const TArray<FInventoryEntry>& PickupInventoryEntries = Pickup->GetPickupInventory();
-		for (FInventoryEntry PickupInventoryEntry : PickupInventoryEntries)
+		TArray<FInventoryEntry> PickupInventoryEntries = Pickup->GetPickupInventory();
+		for (FInventoryEntry& PickupInventoryEntry : PickupInventoryEntries)
 		{
 			InventoryComponent->AddItemDefinition(PickupInventoryEntry);
 		}

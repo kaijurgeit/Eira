@@ -40,6 +40,9 @@ class EIRA_API IPickupable
 public:
 	UFUNCTION(BlueprintCallable)
 	virtual TArray<FInventoryEntry> GetPickupInventory() const = 0;
+	
+	UFUNCTION(BlueprintCallable)
+	virtual void SetCount(TSubclassOf<UInventoryItemDefinition> ItemDef, int32 value) = 0;
 };
 
 UCLASS()

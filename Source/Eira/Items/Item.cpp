@@ -54,6 +54,14 @@ TArray<FInventoryEntry> AItem::GetPickupInventory() const
 	return PickupInventory;
 }
 
+void AItem::SetCount(TSubclassOf<UInventoryItemDefinition> ItemDef, int32 value)
+{
+	// for (auto Element : COLLECTION)
+	// {
+	// 	
+	// }
+}
+
 // Called when the game starts or when spawned
 void AItem::BeginPlay()
 {

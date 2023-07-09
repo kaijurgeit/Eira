@@ -51,7 +51,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, category = "TheGame")
 	TObjectPtr<UTexture2D> Icon;
 
-	virtual TArray<FInventoryEntry> GetPickupInventory() const override;
+	virtual TArray<FInventoryEntry> GetPickupInventory() const override;	
+	virtual void SetCount(TSubclassOf<UInventoryItemDefinition> ItemDef, int32 value) override;
+	
 	
 	UPROPERTY(EditAnywhere)
 	TArray<FInventoryClassEntry> StaticInventory;
