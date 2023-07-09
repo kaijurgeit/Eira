@@ -28,11 +28,11 @@ class EIRA_API UUInventoryFragment_InventoryEntryLayout : public UInventoryItemF
 
 public:
 	UPROPERTY(EditAnywhere)
-	EInventoryGroup InventoryGroup = EInventoryGroup::None;
+	EInventoryGroup Group = EInventoryGroup::None;
 	
 	UPROPERTY(EditAnywhere)
-	int32 MaxStackCount = 0;
+	int32 MaxItemsPerStack = 0;
 	
 	UPROPERTY(EditAnywhere)
-	int32 MaxTotalCount = 0;
+	int32 MaxItemsTotal = 0;
 };

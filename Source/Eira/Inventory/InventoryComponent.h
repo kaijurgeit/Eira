@@ -34,6 +34,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 	FInventoryEntry* GetOrCreateEntry(UInventoryItemDefinition* PickupItem, EInventoryGroup Group);
+	int32 AddItems(FInventoryEntry* Entry, EInventoryGroup Group, int32 MaxItemsPerStack, int32 MaxItemsTotal,
+	             int32 PickupItemCount);
 	int32 FreeStacksInGroup(FInventoryEntry PickupEntry, EInventoryGroup InventoryGroup);
 	int32 TotalItemCountFree(EInventoryGroup Group, int32 MaxStackCount, int32 MaxTotalCount, int32 CurrentItemCount);
 	// FInventoryEntry& GetExistingEntry(FInventoryEntry PickupEntry);
