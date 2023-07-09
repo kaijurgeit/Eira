@@ -3,8 +3,6 @@
 
 #include "ItemFragments/InventoryItemFragment.h"
 
-UE_DISABLE_OPTIMIZATION
-
 UInventoryItemFragment* UInventoryItemDefinition::FindFragmentByClass(
 	TSubclassOf<UInventoryItemFragment> FragmentClass) const
 {

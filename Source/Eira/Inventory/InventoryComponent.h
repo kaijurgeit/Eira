@@ -33,7 +33,9 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
-	FInventoryEntry* GetOrCreateEntry(UInventoryItemDefinition* PickupItem, int32 FreeStacksInGroup);
+	FInventoryEntry* GetOrCreateEntry(UInventoryItemDefinition* PickupItem, EInventoryGroup Group);
+	int32 FreeStacksInGroup(FInventoryEntry PickupEntry, EInventoryGroup InventoryGroup);
+	int32 TotalItemCountFree(EInventoryGroup Group, int32 MaxStackCount, int32 MaxTotalCount, int32 CurrentItemCount);
 	// FInventoryEntry& GetExistingEntry(FInventoryEntry PickupEntry);
 
 	void AddItemDefinition(FInventoryEntry PickupEntry);
@@ -43,5 +45,8 @@ private:
 	TArray<FInventoryEntry> Entries;
 	
 	UPROPERTY()
-	TMap<EInventoryGroup, int32> FreeStacks = {{ EInventoryGroup::Resources, 6 }};
+	TMap<EInventoryGroup, int32> StacksPerGroup = {{ EInventoryGroup::Resources, 6 }};
+	
+	UPROPERTY()
+	TMap<EInventoryGroup, int32> FreeStacksPerGroup = {{ EInventoryGroup::Resources, 6 }};
 };

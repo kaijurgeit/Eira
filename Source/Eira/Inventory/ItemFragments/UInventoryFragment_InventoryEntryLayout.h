@@ -31,8 +31,8 @@ public:
 	EInventoryGroup InventoryGroup = EInventoryGroup::None;
 	
 	UPROPERTY(EditAnywhere)
-	int32 StackCountMax = 0;
+	int32 MaxStackCount = 0;
 	
 	UPROPERTY(EditAnywhere)
-	int32 TotalCountMax = 0;
+	int32 MaxTotalCount = 0;
 };

@@ -50,7 +50,7 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 // 	}
 // }
 
-FInventoryEntry* UInventoryComponent::GetOrCreateEntry(UInventoryItemDefinition* PickupItem, int32 FreeStacksInGroup)
+FInventoryEntry* UInventoryComponent::GetOrCreateEntry(UInventoryItemDefinition* PickupItem, EInventoryGroup Group)
 {
 	FInventoryEntry* InventoryEntry = Entries.FindByPredicate(
 		[PickupItem](const FInventoryEntry& Entry)
@@ -58,52 +58,86 @@ FInventoryEntry* UInventoryComponent::GetOrCreateEntry(UInventoryItemDefinition*
 			return Entry.ItemDef->StaticClass() == PickupItem->StaticClass();
 		});
 
-	if(!InventoryEntry)
+	if(InventoryEntry)
 	{
-		if(FreeStacksInGroup < 1)
-		{
-			return nullptr;
-		}
-		
-		InventoryEntry = &Entries.AddDefaulted_GetRef();
+		return InventoryEntry;
 	}
+	
+	if(FreeStacksPerGroup[Group] == 0)
+	{
+		return nullptr;
+	}
+	
+	InventoryEntry = &Entries.AddDefaulted_GetRef();
+	FreeStacksPerGroup[Group] -= 1;
 	return InventoryEntry;
+}
+
+int32 UInventoryComponent::FreeStacksInGroup(FInventoryEntry PickupEntry, EInventoryGroup InventoryGroup)
+{
+	// Update Free Stacks
+	int32 StacksOccupied = 0;
+	for (const FInventoryEntry& InventoryEntry : Entries)
+	{
+		const UUInventoryFragment_InventoryEntryLayout* EntryLayout = Cast<UUInventoryFragment_InventoryEntryLayout>(
+			PickupEntry.ItemDef->FindFragmentByClass(UUInventoryFragment_InventoryEntryLayout::StaticClass()));
+		// Find Entries of the same group as the pickup e.g. Resources
+		if(EntryLayout && EntryLayout->InventoryGroup == InventoryGroup)
+		{
+			int32 StacksOccupiedByItem = InventoryEntry.Count / EntryLayout->MaxStackCount + 1;
+			StacksOccupied += StacksOccupiedByItem;
+		}					
+	}
+	return StacksPerGroup[InventoryGroup] - StacksOccupied;
 }
 
 void UInventoryComponent::AddItemDefinition(FInventoryEntry PickupEntry)
 {
-	const UUInventoryFragment_InventoryEntryLayout* EntryLayout = Cast<UUInventoryFragment_InventoryEntryLayout>(
+	const UUInventoryFragment_InventoryEntryLayout* ItemLayout = Cast<UUInventoryFragment_InventoryEntryLayout>(
 		PickupEntry.ItemDef->FindFragmentByClass(UUInventoryFragment_InventoryEntryLayout::StaticClass()));
-
-	if(!EntryLayout)
+	
+	if(!ItemLayout)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s -> %s"), *FString(__FUNCTION__), *FString("Inventory Full"));
 		return;
 	}
 
-	FInventoryEntry* InventoryEntry = GetOrCreateEntry(PickupEntry.ItemDef, FreeStacks[EntryLayout->InventoryGroup]);
-	
-	if(!InventoryEntry) { return; }
+	const EInventoryGroup Group = ItemLayout->InventoryGroup;
+	int32 FreeStacks = FreeStacksInGroup(PickupEntry, Group);
+
+	// Get Entry if item definition already exists in inventory or create a new Entry
+	FInventoryEntry* CurrentInventoryEntry = GetOrCreateEntry(PickupEntry.ItemDef, Group);
+
+	// If there is no free stack left in the inventory group no Entry will be createds
+	if(!CurrentInventoryEntry)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s -> %s"), *FString(__FUNCTION__), *FString("Item could not be added because there is no free stack left in the inventory group"));
+		return;
+	}
 
 	// How much space is free in the partially filled Stack?
-	const int32 StackCountFree = InventoryEntry->Count % EntryLayout->StackCountMax;
-			
+	const int32 MaxStackCount = ItemLayout->MaxStackCount;
+	const int32 MaxTotalCount = ItemLayout->MaxTotalCount;
+	const int32 CurrentItemCount = CurrentInventoryEntry->Count;
+	const int32 FreeSpaceInStack = MaxStackCount - (CurrentInventoryEntry->Count % MaxStackCount);	
 	// How much space is left in total considering the partially filled Stack and all empty Stacks in the Group?
-	int32 TotalCountFree = FreeStacks[EntryLayout->InventoryGroup] * EntryLayout->StackCountMax + StackCountFree;
-	TotalCountFree = (EntryLayout->TotalCountMax > 0) ? FMath::Min(TotalCountFree, EntryLayout->TotalCountMax) : TotalCountFree;
+	int32 TotalCountFree = FreeStacksPerGroup[Group] * MaxStackCount + FreeSpaceInStack;
+	TotalCountFree = (MaxTotalCount > 0) ? FMath::Min(TotalCountFree, MaxTotalCount) : TotalCountFree;
 
 	// Add to Inventory
-	const int32 OldItemCount = InventoryEntry->Count;
-	const int32 TotalItemCount = InventoryEntry->Count + PickupEntry.Count;
-	InventoryEntry->Count = (TotalItemCount > TotalCountFree) ? TotalCountFree : TotalItemCount;
+	const int32 OldItemCount = CurrentInventoryEntry->Count;
+	const int32 TotalItemCount = CurrentInventoryEntry->Count + PickupEntry.Count;
+	const int32 NewItemCount = (TotalItemCount > TotalCountFree) ? TotalCountFree : TotalItemCount;	
+	CurrentInventoryEntry->Count = NewItemCount;
 
-	// Update Free Stacks
-	FreeStacks[EntryLayout->InventoryGroup] = FreeStacks[EntryLayout->InventoryGroup] - (InventoryEntry->Count - OldItemCount) / EntryLayout->StackCountMax;
+	// Update FreeStacksPerGroup
+	const int32 NewStacksUsed = (NewItemCount / MaxStackCount) - (OldItemCount / MaxStackCount);
+	FreeStacksPerGroup[Group] -= NewStacksUsed;
 
 	// How many items did not fit into the inventory?
-	int32 RestCount = FMath::Max(0, TotalItemCount - TotalCountFree);
+	const int32 RestCount = FMath::Max(0, TotalItemCount - TotalCountFree);
 	
-	UE_LOG(LogTemp, Warning, TEXT("%s -> Count: %i; Free Stacks: %i; Rest: %i"), *FString(__FUNCTION__), InventoryEntry->Count, FreeStacks[EntryLayout->InventoryGroup], RestCount);
+	UE_LOG(LogTemp, Warning, TEXT("%s -> Count: %i; Free Stacks: %i; Rest: %i"), *FString(__FUNCTION__), CurrentInventoryEntry->Count, FreeStacksPerGroup[Group], RestCount);
 }
 
 
