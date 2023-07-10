@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "InventoryItemFragment.h"
 #include "UObject/Object.h"
-#include "UInventoryFragment_InventoryEntryLayout.generated.h"
+#include "InventoryFragment_InventoryEntryLayout.generated.h"
 
 UENUM(BlueprintType)
 enum class EInventoryGroup
@@ -22,7 +22,7 @@ enum class EInventoryGroup
  * 
  */
 UCLASS(BlueprintType)
-class EIRA_API UUInventoryFragment_InventoryEntryLayout : public UInventoryItemFragment
+class EIRA_API UInventoryFragment_InventoryEntryLayout : public UInventoryItemFragment
 {
 	GENERATED_BODY()
 

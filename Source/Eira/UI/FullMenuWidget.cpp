@@ -3,9 +3,14 @@
 
 #include "FullMenuWidget.h"
 
+#include "InventorySlot.h"
+#include "Components/GridPanel.h"
+#include "Components/TextBlock.h"
 #include "Inventory/InventoryComponent.h"
 #include "Inventory/InventoryItemDefinition.h"
 #include "Player/EiraCharacter.h"
+
+UE_DISABLE_OPTIMIZATION
 
 void UFullMenuWidget::NativeConstruct()
 {
@@ -24,4 +29,33 @@ void UFullMenuWidget::NativeConstruct()
 void UFullMenuWidget::UpdateInventory_Implementation(const TArray<FInventoryEntry>& Inventory)
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
+}
+
+
+int UFullMenuWidget::CreateInventorySlots(const FInventoryEntry& Entry, int32 ColCount, int32 StartIndex)
+{
+	int ColIndex = StartIndex;
+	const UInventoryFragment_InventoryEntryLayout* Layout = Entry.ItemDef->FindFragmentByClass<UInventoryFragment_InventoryEntryLayout>();
+	if(!Layout) { return ColIndex; }
+
+	const int32 RestCount = Entry.Count % Layout->MaxItemsPerStack;
+	int32 StackCount = Entry.Count / Layout->MaxItemsPerStack;
+	StackCount = (RestCount == 0) ? StackCount : StackCount + 1;
+
+	GridResources->ClearChildren();
+
+	for (int i = 0; i < StackCount; ++i)
+	{
+		UInventorySlot* InventorySlot = Cast<UInventorySlot>(CreateWidget(this, SlotClass));
+		if(UTextBlock* TextBlock = Cast<UTextBlock>(InventorySlot->Count))
+		{
+			const int32 Count = (i < (StackCount - 1) || (RestCount == 0)) ? Layout->MaxItemsPerStack : RestCount; 
+			FString String = FString::Printf(TEXT("%d/%d"), Count, Layout->MaxItemsPerStack);
+			const FText Text = FText::FromString(String);
+			TextBlock->SetText(Text);
+		}
+		ColIndex += i;
+		GridResources->AddChildToGrid(InventorySlot, ColIndex / ColCount, ColIndex % ColCount);
+	}
+	return ColIndex;
 }

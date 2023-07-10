@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Interfaces/Pickupable.h"
-#include "ItemFragments/UInventoryFragment_InventoryEntryLayout.h"
+#include "ItemFragments/InventoryFragment_InventoryEntryLayout.h"
 
 #include "InventoryComponent.generated.h"
 

@@ -7,6 +7,8 @@
 #include "UMG/Public/Blueprint/UserWidget.h"
 #include "FullMenuWidget.generated.h"
 
+class UInventorySlot;
+class UGridPanel;
 /**
  * 
  */
@@ -18,8 +20,18 @@ class EIRA_API UFullMenuWidget : public UUserWidget
 protected:
 	virtual void NativeConstruct() override;
 	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UUserWidget> SlotClass;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UGridPanel> GridResources;
+	
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdateInventory(const TArray<FInventoryEntry>& Inventory);
+	
+	UFUNCTION(BlueprintCallable)
+	int CreateInventorySlots(const FInventoryEntry& Entry, int32 ColCount, int32 StartIndex = 0);
+
 
 private:
 	UPROPERTY()

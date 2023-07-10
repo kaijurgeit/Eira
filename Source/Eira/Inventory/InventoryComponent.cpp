@@ -100,8 +100,8 @@ int32 UInventoryComponent::AddItems(FInventoryEntry* Entry, const EInventoryGrou
 int32 UInventoryComponent::AddItemDefinition(const FInventoryEntry& PickupEntry)
 {
 	// Get Item Layout and Group
-	const UUInventoryFragment_InventoryEntryLayout* Layout = Cast<UUInventoryFragment_InventoryEntryLayout>(
-		PickupEntry.ItemDef->FindFragmentByClass(UUInventoryFragment_InventoryEntryLayout::StaticClass()));	
+	const UInventoryFragment_InventoryEntryLayout* Layout = Cast<UInventoryFragment_InventoryEntryLayout>(
+		PickupEntry.ItemDef->FindFragmentByClass(UInventoryFragment_InventoryEntryLayout::StaticClass()));	
 	if(!Layout)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s -> %s"), *FString(__FUNCTION__), *FString("Inventory Full"));
