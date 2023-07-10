@@ -10,18 +10,18 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class EIRA_API UFullMenuWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
 protected:
 	virtual void NativeConstruct() override;
+	
+	UFUNCTION(BlueprintNativeEvent)
+	void UpdateInventory(const TArray<FInventoryEntry>& Inventory);
 
 private:
 	UPROPERTY()
 	TObjectPtr<UInventoryComponent> InventoryComponent;
-
-	UFUNCTION()
-	void UpdateInventory(FInventoryEntry InventoryEntry);
 };

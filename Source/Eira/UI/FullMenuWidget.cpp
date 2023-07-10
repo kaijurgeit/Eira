@@ -16,12 +16,12 @@ void UFullMenuWidget::NativeConstruct()
 		InventoryComponent = Cast<UInventoryComponent>(PlayerCharacter->GetComponentByClass(UInventoryComponent::StaticClass()));
 		if(InventoryComponent)
 		{
-			InventoryComponent->UpdateInventory.AddUniqueDynamic(this, &ThisClass::UpdateInventory);
+			InventoryComponent->UpdateInventory.AddUniqueDynamic(this, &ThisClass::UpdateInventory_Implementation);
 		}	
 	}
 }
 
-void UFullMenuWidget::UpdateInventory(FInventoryEntry InventoryEntry)
+void UFullMenuWidget::UpdateInventory_Implementation(const TArray<FInventoryEntry>& Inventory)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s -> %i : %s"), *FString(__FUNCTION__), InventoryEntry.Count, *InventoryEntry.ItemDef->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 }

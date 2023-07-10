@@ -66,7 +66,7 @@ FInventoryEntry* UInventoryComponent::GetOrCreateEntry(UInventoryItemDefinition*
 	{
 		return nullptr;
 	}
-	
+
 	InventoryEntry = &Entries.AddDefaulted_GetRef();
 	InventoryEntry->ItemDef = PickupItem;
 	FreeStacksPerGroup[Group] -= 1;
@@ -93,10 +93,11 @@ int32 UInventoryComponent::AddItems(FInventoryEntry* Entry, const EInventoryGrou
 	FreeStacksPerGroup[Group] -= NewStacksUsed;
 
 	const int32 ItemsAdded = NewItemCount - OldCount;
+	UpdateInventory.Broadcast(Entries);
 	return ItemsAdded;
 }
 
-void UInventoryComponent::AddItemDefinition(FInventoryEntry& PickupEntry)
+int32 UInventoryComponent::AddItemDefinition(const FInventoryEntry& PickupEntry)
 {
 	// Get Item Layout and Group
 	const UUInventoryFragment_InventoryEntryLayout* Layout = Cast<UUInventoryFragment_InventoryEntryLayout>(
@@ -104,7 +105,7 @@ void UInventoryComponent::AddItemDefinition(FInventoryEntry& PickupEntry)
 	if(!Layout)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s -> %s"), *FString(__FUNCTION__), *FString("Inventory Full"));
-		return;
+		return 0;
 	}
 
 	// Get Entry if item definition already exists in inventory or create a new Entry
@@ -114,15 +115,14 @@ void UInventoryComponent::AddItemDefinition(FInventoryEntry& PickupEntry)
 	if(!Entry)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s -> %s"), *FString(__FUNCTION__), *FString("Item could not be added because there is no free stack left in the inventory group"));
-		return;
+		return 0;
 	}
 
 	const int32 ItemsAdded = AddItems(Entry, Layout->Group, Layout->MaxItemsPerStack, Layout->MaxItemsTotal, PickupEntry.Count);
 	
-	// How many items did not fit into the inventory?
-	PickupEntry.Count -= ItemsAdded;
-	
 	UE_LOG(LogTemp, Warning, TEXT("%s -> Count: %i; Free Stacks: %i; Rest: %i"), *FString(__FUNCTION__), Entry->Count, FreeStacksPerGroup[Layout->Group], PickupEntry.Count);
+
+	return ItemsAdded;
 }
 
 

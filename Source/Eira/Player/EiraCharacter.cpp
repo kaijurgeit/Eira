@@ -259,8 +259,7 @@ void AEiraCharacter::GiveAbilities()
 void AEiraCharacter::OpenQuickInventoryMenu()
 {
 	QuickInventoryMenu->AddToViewport();
-	// TODO: Is using UWidgetBlueprintLibrary bad practice (there is a more native alternative with `SetInputMode()`)? 
-	UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(PlayerController, QuickInventoryMenu, EMouseLockMode::LockAlways);
+	PlayerController->SetInputMode(FInputModeGameAndUI().SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways));
 	UGameplayStatics::SetGlobalTimeDilation(this, TimeDilation);
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 	{
@@ -271,7 +270,7 @@ void AEiraCharacter::OpenQuickInventoryMenu()
 void AEiraCharacter::CloseQuickInventoryMenu()
 {
 	QuickInventoryMenu->RemoveFromParent();
-	UWidgetBlueprintLibrary::SetInputMode_GameOnly(PlayerController);
+	PlayerController->SetInputMode(FInputModeGameOnly());
 	constexpr const float NormalTime = 1.0f;
 	UGameplayStatics::SetGlobalTimeDilation(this, NormalTime);
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -298,9 +297,9 @@ void AEiraCharacter::OpenFullMenu()
 {
 	FullMenu->AddToViewport();
 	// TODO: Is using UWidgetBlueprintLibrary bad practice (there is a more native alternative with `SetInputMode()`)?
-	PlayerController->SetShowMouseCursor(true); 
-	UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(PlayerController, FullMenu, EMouseLockMode::LockAlways);
-	UGameplayStatics::SetGamePaused(this, true);
+	PlayerController->SetShowMouseCursor(true);
+	PlayerController->SetInputMode(FInputModeGameAndUI().SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways));
+	UGameplayStatics::SetGlobalTimeDilation(this, 0.f);
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 	{
 		Subsystem->AddMappingContext(FullMenuMappingContext, 1);
@@ -309,12 +308,13 @@ void AEiraCharacter::OpenFullMenu()
 
 void AEiraCharacter::CloseFullMenu()
 {
-	QuickInventoryMenu->RemoveFromParent();
+	FullMenu->RemoveFromParent();
 	PlayerController->SetShowMouseCursor(false);
-	UWidgetBlueprintLibrary::SetInputMode_GameOnly(PlayerController);
-	UGameplayStatics::SetGamePaused(this, false);
+	PlayerController->SetInputMode(FInputModeGameOnly());
+	constexpr const float NormalTime = 1.0f;
+	UGameplayStatics::SetGlobalTimeDilation(this, NormalTime);
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 	{
-		Subsystem->RemoveMappingContext(QuickInventoryMappingContext);
+		Subsystem->RemoveMappingContext(FullMenuMappingContext);
 	}
 }

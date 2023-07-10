@@ -11,7 +11,7 @@
 
 class UInventoryItemDefinition;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateInventory, FInventoryEntry, InventoryEntry);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateInventory, const TArray<FInventoryEntry>&, InventoryEntry);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class EIRA_API UInventoryComponent : public UActorComponent
@@ -37,7 +37,7 @@ public:
 	int32 AddItems(FInventoryEntry* Entry, EInventoryGroup Group, int32 MaxItemsPerStack, int32 MaxItemsTotal, int32 PickupItemCount);
 	// FInventoryEntry& GetExistingEntry(FInventoryEntry PickupEntry);
 
-	void AddItemDefinition(FInventoryEntry& PickupEntry);
+	int32 AddItemDefinition(const FInventoryEntry& PickupEntry);
 	
 	UPROPERTY(EditDefaultsOnly)
 	TMap<EInventoryGroup, int32> MaxStacksPerGroup = {{ EInventoryGroup::Resources, 3 }};
