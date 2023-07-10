@@ -3,7 +3,7 @@
 
 #include "ItemFragments/InventoryItemFragment.h"
 
-UInventoryItemFragment* UInventoryItemDefinition::FindFragmentByClass(
+const UInventoryItemFragment* UInventoryItemDefinition::FindFragmentByClass(
 	TSubclassOf<UInventoryItemFragment> FragmentClass) const
 {
 	if(!FragmentClass) { return nullptr; }

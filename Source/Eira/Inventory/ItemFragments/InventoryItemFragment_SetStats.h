@@ -10,13 +10,13 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType)
 class EIRA_API UInventoryItemFragment_SetStats : public UInventoryItemFragment
 {
 	GENERATED_BODY()
 	
 protected:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TMap<FGameplayTag, int32> InitialItemStats;
 
 public:

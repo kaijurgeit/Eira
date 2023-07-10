@@ -21,18 +21,18 @@ enum class EInventoryGroup
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType)
 class EIRA_API UUInventoryFragment_InventoryEntryLayout : public UInventoryItemFragment
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EInventoryGroup Group = EInventoryGroup::None;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 MaxItemsPerStack = 0;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 MaxItemsTotal = 0;
 };

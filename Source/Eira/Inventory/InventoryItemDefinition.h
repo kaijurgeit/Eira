@@ -19,6 +19,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Inventory, Instanced)
 	TArray<TObjectPtr<UInventoryItemFragment>> Fragments = TArray<TObjectPtr<UInventoryItemFragment>>();
 
-	UFUNCTION(BlueprintCallable)
-	UInventoryItemFragment* FindFragmentByClass(TSubclassOf<UInventoryItemFragment> FragmentClass) const;
+	UFUNCTION(BlueprintCallable, BlueprintPure=false, meta=(DeterminesOutputType=FragmentClass))
+	const UInventoryItemFragment* FindFragmentByClass(TSubclassOf<UInventoryItemFragment> FragmentClass) const;
+
+	template <typename ResultClass>
+	const ResultClass* FindFragmentByClass()
+	{
+		return (ResultClass*)FindFragmentByClass(ResultClass::StaticClass());
+	}
 };
