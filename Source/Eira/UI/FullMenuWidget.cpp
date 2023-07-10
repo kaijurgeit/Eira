@@ -16,7 +16,7 @@ void UFullMenuWidget::NativeConstruct()
 		InventoryComponent = Cast<UInventoryComponent>(PlayerCharacter->GetComponentByClass(UInventoryComponent::StaticClass()));
 		if(InventoryComponent)
 		{
-			InventoryComponent->UpdateInventory.AddUniqueDynamic(this, &ThisClass::UpdateInventory_Implementation);
+			InventoryComponent->UpdateInventory.AddUniqueDynamic(this, &UFullMenuWidget::UpdateInventory);
 		}	
 	}
 }

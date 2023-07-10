@@ -290,13 +290,11 @@ void AEiraCharacter::OpenCloseFullMenu()
 		CloseFullMenu();
 	}	
 	bIsFullMenuOpen = bIsFullMenuOpen ? false : true;
-	UE_LOG(LogTemp, Warning, TEXT("bIsFullMenuOpen = %s"), bIsFullMenuOpen ? TEXT("true") : TEXT("false"));
 }
 
 void AEiraCharacter::OpenFullMenu()
 {
 	FullMenu->AddToViewport();
-	// TODO: Is using UWidgetBlueprintLibrary bad practice (there is a more native alternative with `SetInputMode()`)?
 	PlayerController->SetShowMouseCursor(true);
 	PlayerController->SetInputMode(FInputModeGameAndUI().SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways));
 	UGameplayStatics::SetGlobalTimeDilation(this, 0.f);
