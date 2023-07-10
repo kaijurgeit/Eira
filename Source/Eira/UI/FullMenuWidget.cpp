@@ -47,6 +47,7 @@ int UFullMenuWidget::CreateInventorySlots(const FInventoryEntry& Entry, int32 Co
 	for (int i = 0; i < StackCount; ++i)
 	{
 		UInventorySlot* InventorySlot = Cast<UInventorySlot>(CreateWidget(this, SlotClass));
+		InventorySlot->ItemDefClass = Entry.ItemDef->StaticClass();
 		if(UTextBlock* TextBlock = Cast<UTextBlock>(InventorySlot->Count))
 		{
 			const int32 Count = (i < (StackCount - 1) || (RestCount == 0)) ? Layout->MaxItemsPerStack : RestCount; 

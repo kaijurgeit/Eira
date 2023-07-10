@@ -7,6 +7,8 @@
 #include "UObject/Object.h"
 #include "InventorySlot.generated.h"
 
+class UButton;
+class UInventoryItemDefinition;
 class UTextLayoutWidget;
 
 /**
@@ -17,7 +19,13 @@ class EIRA_API UInventorySlot : public UUserWidget
 {
 	GENERATED_BODY()
 
-public:
+public:	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UTextLayoutWidget> Count;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TSubclassOf<UInventoryItemDefinition> ItemDefClass;
+	
+	// UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
+	// TObjectPtr<UButton> Button;
 };
