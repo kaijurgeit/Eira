@@ -4,6 +4,7 @@
 #include "Item.h"
 
 #include "Components/MaterialBillboardComponent.h"
+#include "Inventory/InventoryItemDefinition.h"
 
 
 // Sets default values
@@ -36,7 +37,10 @@ void AItem::Interact()
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 }
 
-
+TArray<FInventoryClassEntry>& AItem::GetPickupInventory()
+{
+	return StaticInventory;
+}
 // Called when the game starts or when spawned
 void AItem::BeginPlay()
 {

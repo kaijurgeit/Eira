@@ -11,6 +11,7 @@
 #include "Interfaces/InteractableSource.h"
 #include "EiraCharacter.generated.h"
 
+class UInventoryComponent;
 class USphereComponent;
 class UEiraAttributeSet;
 class UEiraAbilitySystemComponent;
@@ -52,7 +53,9 @@ class AEiraCharacter : public ACharacter, public IAbilitySystemInterface, public
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UEiraAbilitySystemComponent> AbilitySystemComponent;
-
+	
+	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInventoryComponent> InventoryComponent;
 
 	UPROPERTY()
 	const UEiraAttributeSet* Attributes;

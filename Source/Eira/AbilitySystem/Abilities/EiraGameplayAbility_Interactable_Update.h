@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UEiraGameplayAbility_InteractableSource.h"
+#include "EiraGameplayAbility_Interactable.h"
 #include "AbilitySystem/EiraGameplayAbility.h"
 #include "EiraGameplayAbility_Interactable_Update.generated.h"
 
@@ -13,7 +13,7 @@ class IInteractableTarget;
  * 
  */
 UCLASS()
-class EIRA_API UEiraGameplayAbility_Interactable_Update : public UUEiraGameplayAbility_InteractableSource
+class EIRA_API UEiraGameplayAbility_Interactable_Update : public UEiraGameplayAbility_Interactable
 {
 	GENERATED_BODY()
 
