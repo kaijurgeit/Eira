@@ -10,8 +10,6 @@
 #include "Inventory/InventoryItemDefinition.h"
 #include "Player/EiraCharacter.h"
 
-UE_DISABLE_OPTIMIZATION
-
 void UFullMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();

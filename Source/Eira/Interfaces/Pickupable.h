@@ -17,10 +17,10 @@ struct FInventoryClassEntry
 {
 	GENERATED_BODY()
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UInventoryItemDefinition> ItemDef = nullptr;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Count = 0;
 };
 
