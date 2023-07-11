@@ -22,7 +22,7 @@ class UInputMappingContext;
 class UInputAction;
 class UGameplayAbility;
 class AEiraPlayerController;
-class UInventoryWidget;
+class URadialMenuWidget;
 class UEiraInventoryManagerComponent;
 class AItem;
 
@@ -109,7 +109,7 @@ public:
 	TSubclassOf<UUserWidget> QuickInventoryMenuClass;
 	
 	UPROPERTY()
-	TObjectPtr<UInventoryWidget> QuickInventoryMenu;
+	TObjectPtr<URadialMenuWidget> QuickInventoryMenu;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UUserWidget> FullMenuClass;

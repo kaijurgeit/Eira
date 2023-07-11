@@ -20,7 +20,7 @@
 #include "Inventory/InventoryComponent.h"
 #include "Items/Item.h"
 #include "Kismet/GameplayStatics.h"
-#include "UI/InventoryWidget.h"
+#include "UI/RadialMenuWidget.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -159,7 +159,7 @@ void AEiraCharacter::BeginPlay()
 		}
 	}
 
-	QuickInventoryMenu = Cast<UInventoryWidget>(CreateWidget(PlayerController, QuickInventoryMenuClass));
+	QuickInventoryMenu = Cast<URadialMenuWidget>(CreateWidget(PlayerController, QuickInventoryMenuClass));
 	QuickInventoryMenu->AddToViewport();
 	QuickInventoryMenu->RemoveFromParent();
 	
