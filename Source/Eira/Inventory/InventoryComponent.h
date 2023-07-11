@@ -33,11 +33,13 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
-	FInventoryEntry* GetOrCreateEntry(UInventoryItemDefinition* PickupItem, EInventoryGroup Group);
-	int32 AddItems(FInventoryEntry* Entry, EInventoryGroup Group, int32 MaxItemsPerStack, int32 MaxItemsTotal, int32 PickupItemCount);
 	// FInventoryEntry& GetExistingEntry(FInventoryEntry PickupEntry);
 
+	UFUNCTION(BlueprintCallable)
 	int32 AddItemDefinition(const FInventoryEntry& PickupEntry);
+	
+	UFUNCTION(BlueprintCallable)
+	int32 RemoveItemDefinition(const FInventoryEntry& DropEntry);
 	
 	UPROPERTY(EditDefaultsOnly)
 	TMap<EInventoryGroup, int32> MaxStacksPerGroup = {{ EInventoryGroup::Resources, 3 }};
@@ -48,4 +50,7 @@ private:
 	
 	UPROPERTY()
 	TMap<EInventoryGroup, int32> FreeStacksPerGroup;
+	
+	int32 AddItems(FInventoryEntry* Entry, EInventoryGroup Group, int32 MaxItemsPerStack, int32 MaxItemsTotal, int32 PickupItemCount);
+	FInventoryEntry* GetOrCreateEntry(UInventoryItemDefinition* PickupItem, EInventoryGroup Group);
 };

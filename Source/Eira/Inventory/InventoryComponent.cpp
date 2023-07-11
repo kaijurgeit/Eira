@@ -93,7 +93,6 @@ int32 UInventoryComponent::AddItems(FInventoryEntry* Entry, const EInventoryGrou
 	FreeStacksPerGroup[Group] -= NewStacksUsed;
 
 	const int32 ItemsAdded = NewItemCount - OldCount;
-	UpdateInventory.Broadcast(Entries);
 	return ItemsAdded;
 }
 
@@ -104,7 +103,7 @@ int32 UInventoryComponent::AddItemDefinition(const FInventoryEntry& PickupEntry)
 		PickupEntry.ItemDef->FindFragmentByClass(UInventoryFragment_InventoryEntryLayout::StaticClass()));	
 	if(!Layout)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s -> %s"), *FString(__FUNCTION__), *FString("Inventory Full"));
+		UE_LOG(LogTemp, Warning, TEXT("%s -> %s"), *FString(__FUNCTION__), *FString("No Entry Layout"));
 		return 0;
 	}
 
@@ -119,10 +118,40 @@ int32 UInventoryComponent::AddItemDefinition(const FInventoryEntry& PickupEntry)
 	}
 
 	const int32 ItemsAdded = AddItems(Entry, Layout->Group, Layout->MaxItemsPerStack, Layout->MaxItemsTotal, PickupEntry.Count);
+	UpdateInventory.Broadcast(Entries);
 	
-	UE_LOG(LogTemp, Warning, TEXT("%s -> Count: %i; Free Stacks: %i; Rest: %i"), *FString(__FUNCTION__), Entry->Count, FreeStacksPerGroup[Layout->Group], PickupEntry.Count);
-
 	return ItemsAdded;
+}
+
+int32 UInventoryComponent::RemoveItemDefinition(const FInventoryEntry& DropEntry)
+{	
+	const UInventoryFragment_InventoryEntryLayout* Layout = Cast<UInventoryFragment_InventoryEntryLayout>(
+		DropEntry.ItemDef->FindFragmentByClass(UInventoryFragment_InventoryEntryLayout::StaticClass()));
+	if(!Layout)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s -> %s"), *FString(__FUNCTION__), *FString("No Entry Layout"));
+		return 0;
+	}
+	
+	int32 ItemsRemoved = 0;
+	const int Index = Entries.FindLastByPredicate(
+		[DropEntry](const FInventoryEntry& Entry)
+		{
+			return Entry.ItemDef->StaticClass() == DropEntry.ItemDef->StaticClass();
+		});
+	if(Index == INDEX_NONE) { return ItemsRemoved; }
+	
+	ItemsRemoved = FMath::Min(DropEntry.Count, Entries[Index].Count);
+	Entries[Index].Count -= ItemsRemoved;
+
+	if(Entries[Index].Count == 0)
+	{
+		Entries.RemoveAt(Index);
+		FreeStacksPerGroup[Layout->Group] += 1;
+	}
+	UpdateInventory.Broadcast(Entries);
+
+	return ItemsRemoved;	
 }
 
 

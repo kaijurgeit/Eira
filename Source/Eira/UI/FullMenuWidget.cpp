@@ -28,7 +28,7 @@ void UFullMenuWidget::NativeConstruct()
 
 void UFullMenuWidget::UpdateInventory_Implementation(const TArray<FInventoryEntry>& Inventory)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
+	GridResources->ClearChildren();
 }
 
 
@@ -42,18 +42,17 @@ int UFullMenuWidget::CreateInventorySlots(const FInventoryEntry& Entry, int32 Co
 	int32 StackCount = Entry.Count / Layout->MaxItemsPerStack;
 	StackCount = (RestCount == 0) ? StackCount : StackCount + 1;
 
-	GridResources->ClearChildren();
-
 	for (int i = 0; i < StackCount; ++i)
 	{
 		UInventorySlot* InventorySlot = Cast<UInventorySlot>(CreateWidget(this, SlotClass));
-		InventorySlot->ItemDefClass = Entry.ItemDef->StaticClass();
-		if(UTextBlock* TextBlock = Cast<UTextBlock>(InventorySlot->Count))
+		InventorySlot->ItemDef = Entry.ItemDef;
+		if(UTextBlock* TextBlock = Cast<UTextBlock>(InventorySlot->CountText))
 		{
-			const int32 Count = (i < (StackCount - 1) || (RestCount == 0)) ? Layout->MaxItemsPerStack : RestCount; 
+			const int32 Count = (i < (StackCount - 1) || (RestCount == 0)) ? Layout->MaxItemsPerStack : RestCount;
 			FString String = FString::Printf(TEXT("%d/%d"), Count, Layout->MaxItemsPerStack);
 			const FText Text = FText::FromString(String);
 			TextBlock->SetText(Text);
+			InventorySlot->Count = Count;
 		}
 		ColIndex += i;
 		GridResources->AddChildToGrid(InventorySlot, ColIndex / ColCount, ColIndex % ColCount);

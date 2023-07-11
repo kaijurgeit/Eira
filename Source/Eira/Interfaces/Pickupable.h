@@ -29,10 +29,10 @@ struct FInventoryEntry
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UInventoryItemDefinition> ItemDef = nullptr;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Count = 0;
 };
 

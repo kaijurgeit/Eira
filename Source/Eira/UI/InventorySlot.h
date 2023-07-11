@@ -19,12 +19,15 @@ class EIRA_API UInventorySlot : public UUserWidget
 {
 	GENERATED_BODY()
 
-public:	
+public:
+	UPROPERTY(BlueprintReadOnly)
+	int Count = 1;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UTextLayoutWidget> Count;
+	TObjectPtr<UTextLayoutWidget> CountText;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TSubclassOf<UInventoryItemDefinition> ItemDefClass;
+	TObjectPtr<UInventoryItemDefinition> ItemDef;
 	
 	// UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
 	// TObjectPtr<UButton> Button;
