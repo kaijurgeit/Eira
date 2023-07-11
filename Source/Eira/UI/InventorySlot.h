@@ -10,6 +10,7 @@
 class UButton;
 class UInventoryItemDefinition;
 class UTextLayoutWidget;
+class UImage;
 
 /**
  * 
@@ -28,7 +29,7 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UInventoryItemDefinition> ItemDef;
-	
-	// UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
-	// TObjectPtr<UButton> Button;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UImage> Icon;
 };

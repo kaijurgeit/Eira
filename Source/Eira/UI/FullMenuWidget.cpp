@@ -5,6 +5,7 @@
 
 #include "InventorySlot.h"
 #include "Components/GridPanel.h"
+#include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Inventory/InventoryComponent.h"
 #include "Inventory/InventoryItemDefinition.h"
@@ -51,6 +52,11 @@ int UFullMenuWidget::CreateInventorySlots(const FInventoryEntry& Entry, int32 Co
 			const FText Text = FText::FromString(String);
 			TextBlock->SetText(Text);
 			InventorySlot->Count = Count;
+			// TODO
+			InventorySlot->Icon->Brush = FSlateBrush();			
+			InventorySlot->Icon->Brush.SetImageSize(FVector2d(100.f, 100.f));
+			InventorySlot->Icon->SetBrushFromTexture(Layout->IconTexture);				
+			InventorySlot->Icon->SetBrushTintColor(HighlightColor);	
 		}
 		ColIndex += i;
 		GridResources->AddChildToGrid(InventorySlot, ColIndex / ColCount, ColIndex % ColCount);

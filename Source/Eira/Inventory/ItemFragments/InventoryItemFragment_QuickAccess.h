@@ -55,5 +55,8 @@ class EIRA_API UInventoryItemFragment_QuickAccess : public UInventoryItemFragmen
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EQuickAccessGroup Group;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UTexture2D> IconTexture;
 };
 

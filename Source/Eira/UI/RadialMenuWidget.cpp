@@ -18,7 +18,6 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Player/EiraCharacter.h"
 
-UE_DISABLE_OPTIMIZATION
 
 void URadialMenuWidget::NativeConstruct()
 {

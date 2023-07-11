@@ -35,4 +35,7 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 MaxItemsTotal = 0;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UTexture2D> IconTexture;
 };

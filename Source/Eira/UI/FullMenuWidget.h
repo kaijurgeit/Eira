@@ -36,4 +36,6 @@ protected:
 private:
 	UPROPERTY()
 	TObjectPtr<UInventoryComponent> InventoryComponent;
+	
+	FLinearColor HighlightColor = FLinearColor(1.f, 1.f, 1.f, 1.f);
 };
