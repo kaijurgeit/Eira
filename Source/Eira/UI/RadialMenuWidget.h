@@ -27,7 +27,7 @@ public:
 protected:	
 	virtual void NativeConstruct() override;
 	UFUNCTION(BlueprintNativeEvent)
-	void UpdateSector(const TArray<FInventoryEntry>& Inventory);
+	void UpdateSectors(const TArray<FInventoryEntry>& Inventory);
 	void InitializeDesign();
 	void HighlightSector();
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;

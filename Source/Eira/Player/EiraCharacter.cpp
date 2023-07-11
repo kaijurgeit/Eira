@@ -138,6 +138,7 @@ void AEiraCharacter::AttachToSocket(AItem* Item, FName SocketName)
 	Item->AttachToComponent(GetMesh(), AttachmentTransformRules, SocketName);
 	UE_LOG(LogTemp, Warning, TEXT("%s, - Actor: %s, - SocketName: %s"),
 		*FString(__FUNCTION__), *Item->GetName(), *SocketName.ToString());
+	Item->Attach();
 	
 	Attachments.Add(Item);
 }

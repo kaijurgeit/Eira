@@ -29,7 +29,7 @@ void URadialMenuWidget::NativeConstruct()
 		InventoryComponent = Cast<UInventoryComponent>(PlayerCharacter->GetComponentByClass(UInventoryComponent::StaticClass()));
 		if(InventoryComponent)
 		{
-			// InventoryComponent->UpdateStorage.AddUniqueDynamic(this, &URadialMenuWidget::UpdateSector);
+			InventoryComponent->UpdateInventory.AddUniqueDynamic(this, &URadialMenuWidget::UpdateSectors);
 		}		
 	}
 	
@@ -54,7 +54,7 @@ void URadialMenuWidget::InitializeDesign()
 	}
 }
 
-void URadialMenuWidget::UpdateSector_Implementation(const TArray<FInventoryEntry>& Inventory)
+void URadialMenuWidget::UpdateSectors_Implementation(const TArray<FInventoryEntry>& Inventory)
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	// const FSectorInfo* SectorInfo = GetSectorInfo(SlotInfo);
@@ -237,10 +237,9 @@ void URadialMenuWidget::SetCountPositionByIndex(int i)
 	FVector2d CountPosition =  FVector2d(X, Y);
 	CountPosition.Normalize();
 	CountPosition = CountDistToCenter * CountPosition;
-	if(const UQuickAccessSlot* InventorySlot = GetInventorySlot(i))
+	if(const UQuickAccessSlot* QuickAccessSlot = GetInventorySlot(i))
 	{
-		// UCanvasPanelSlot* Count = Cast<UCanvasPanelSlot>(InventorySlot->Count);
-		UCanvasPanelSlot* Count = UWidgetLayoutLibrary::SlotAsCanvasSlot(InventorySlot->Count);
+		UCanvasPanelSlot* Count = UWidgetLayoutLibrary::SlotAsCanvasSlot(QuickAccessSlot->CountText);
 		if(Count)
 		{
 			Count->SetPosition(CountPosition);
