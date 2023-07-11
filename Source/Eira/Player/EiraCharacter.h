@@ -24,6 +24,7 @@ class UGameplayAbility;
 class AEiraPlayerController;
 class UInventoryWidget;
 class UEiraInventoryManagerComponent;
+class AItem;
 
 UCLASS(config=Game)
 class AEiraCharacter : public ACharacter, public IAbilitySystemInterface, public IColliderTagsInterface, public IInteractableSource
@@ -56,9 +57,9 @@ class AEiraCharacter : public ACharacter, public IAbilitySystemInterface, public
 	
 	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInventoryComponent> InventoryComponent;
-
+	
 	UPROPERTY()
-	const UEiraAttributeSet* Attributes;
+	const UEiraAttributeSet* Attributes;	
 
 public:
 	AEiraCharacter();
@@ -67,6 +68,8 @@ public:
 	virtual void OnRep_PlayerState() override;
 	virtual TArray<UShapeComponent*> GetCollidersThatHaveTags_Implementation(FGameplayTagContainer ColliderTags) override;	
 	virtual UShapeComponent* GetColliderThatHasTag_Implementation(FGameplayTag ColliderTag) override;
+	void Equip(AItem* Item, FName SocketName);
+	void AttachToSocket(AItem* Item, FName SocketName);
 	
 	/** Effect that initializes our default attributes. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "GAS")
@@ -126,9 +129,10 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<AActor> InteractableTargetActor;
+	
+	TArray<TObjectPtr<AActor>> Attachments;
 
 	bool bIsFullMenuOpen = false;
-
 	
 	virtual void GiveAbilities();
 	void OpenQuickInventoryMenu();

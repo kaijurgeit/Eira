@@ -35,6 +35,8 @@ public:
 	AItem();
 	virtual void Highlight(bool IsHightlighted) override;
 	virtual void Interact() override;
+	void Attach();
+	void UnAttach();
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, category = Inventory)
 	TObjectPtr<UTexture2D> Icon;

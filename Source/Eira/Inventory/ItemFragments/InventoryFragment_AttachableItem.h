@@ -5,24 +5,20 @@
 #include "CoreMinimal.h"
 #include "InventoryItemFragment.h"
 #include "UObject/Object.h"
-#include "InventoryFragment_EquippableItem.generated.h"
+#include "InventoryFragment_AttachableItem.generated.h"
 
-class UEiraGameplayAbility;
 class AItem;
+
 /**
  * 
  */
 UCLASS()
-class EIRA_API UInventoryFragment_EquippableItem : public UInventoryItemFragment
+class EIRA_API UInventoryFragment_AttachableItem : public UInventoryItemFragment
 {
 	GENERATED_BODY()
-
 public:
 	UPROPERTY(EditAnywhere, Category=Inventory)
 	TSubclassOf<AItem> ItemClass;
-
-	UPROPERTY(EditAnywhere, Category=Inventory)
-	TArray<TObjectPtr<UEiraGameplayAbility>> AbilitiesToGrant;
 	
 	UPROPERTY(EditAnywhere, Category=Inventory)
 	FName AttachSocket;

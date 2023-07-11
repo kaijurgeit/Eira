@@ -37,6 +37,18 @@ void AItem::Interact()
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 }
 
+void AItem::Attach()
+{	
+	IconBillboardComponent->SetHiddenInGame(true);	
+	StaticMeshComponent->SetCollisionProfileName(TEXT("NoCollision"));
+}
+
+void AItem::UnAttach()
+{
+	IconBillboardComponent->SetHiddenInGame(false);	
+	StaticMeshComponent->SetCollisionProfileName(TEXT("Interact"));
+}
+
 TArray<FInventoryClassEntry>& AItem::GetPickupInventory()
 {
 	return StaticInventory;

@@ -3,12 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InventoryItemDefinition.h"
 #include "Components/ActorComponent.h"
 #include "Interfaces/Pickupable.h"
 #include "ItemFragments/InventoryFragment_InventoryEntryLayout.h"
 
 #include "InventoryComponent.generated.h"
 
+class AEiraCharacter;
 class UInventoryItemDefinition;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateInventory, const TArray<FInventoryEntry>&, InventoryEntry);
@@ -33,13 +35,15 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
-	// FInventoryEntry& GetExistingEntry(FInventoryEntry PickupEntry);
 
 	UFUNCTION(BlueprintCallable)
 	int32 AddItemDefinition(const FInventoryEntry& PickupEntry);
 	
 	UFUNCTION(BlueprintCallable)
 	int32 RemoveItemDefinition(const FInventoryEntry& DropEntry);
+
+	UFUNCTION(BlueprintCallable)
+	void Select(const UInventoryItemDefinition* ItemDef);
 	
 	UPROPERTY(EditDefaultsOnly)
 	TMap<EInventoryGroup, int32> MaxStacksPerGroup = {{ EInventoryGroup::Resources, 3 }};
@@ -50,7 +54,11 @@ private:
 	
 	UPROPERTY()
 	TMap<EInventoryGroup, int32> FreeStacksPerGroup;
+
+	UPROPERTY()
+	TObjectPtr<AEiraCharacter> EiraCharacterOwner;
 	
 	int32 AddItems(FInventoryEntry* Entry, EInventoryGroup Group, int32 MaxItemsPerStack, int32 MaxItemsTotal, int32 PickupItemCount);
-	FInventoryEntry* GetOrCreateEntry(UInventoryItemDefinition* PickupItem, EInventoryGroup Group);
+	FInventoryEntry* GetOrCreateEntry(UInventoryItemDefinition* PickupItem, EInventoryGroup Group);	
+	AEiraCharacter* GetEiraCharacterOwner();
 };

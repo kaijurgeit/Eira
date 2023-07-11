@@ -18,6 +18,7 @@
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/SphereComponent.h"
 #include "Inventory/InventoryComponent.h"
+#include "Items/Item.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/InventoryWidget.h"
 
@@ -120,6 +121,25 @@ UShapeComponent* AEiraCharacter::GetColliderThatHasTag_Implementation(FGameplayT
 		}
 	}
 	return nullptr;
+}
+
+void AEiraCharacter::Equip(AItem* Item, FName SocketName)
+{
+	AttachToSocket(Item, SocketName);
+}
+
+void AEiraCharacter::AttachToSocket(AItem* Item, FName SocketName)
+{	
+	const FAttachmentTransformRules AttachmentTransformRules(
+		EAttachmentRule::SnapToTarget,
+		EAttachmentRule::SnapToTarget,
+		EAttachmentRule::KeepWorld,
+		false);
+	Item->AttachToComponent(GetMesh(), AttachmentTransformRules, SocketName);
+	UE_LOG(LogTemp, Warning, TEXT("%s, - Actor: %s, - SocketName: %s"),
+		*FString(__FUNCTION__), *Item->GetName(), *SocketName.ToString());
+	
+	Attachments.Add(Item);
 }
 
 

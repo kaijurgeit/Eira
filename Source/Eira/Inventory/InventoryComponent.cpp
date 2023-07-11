@@ -2,6 +2,10 @@
 
 #include "InventoryComponent.h"
 #include "InventoryItemDefinition.h"
+#include "ItemFragments/InventoryFragment_AttachableItem.h"
+#include "ItemFragments/InventoryFragment_EquippableItem.h"
+#include "Items/Item.h"
+#include "Player/EiraCharacter.h"
 
 // UE_DISABLE_OPTIMIZATION
 
@@ -20,6 +24,7 @@ UInventoryComponent::UInventoryComponent()
 void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	EiraCharacterOwner = Cast<AEiraCharacter>(GetOwner());
 
 	// ...
 	FreeStacksPerGroup = TMap<EInventoryGroup, int32>(MaxStacksPerGroup);
@@ -34,20 +39,6 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 	// ...
 }
-
-// FInventoryEntry& UInventoryComponent::GetExistingEntry(FInventoryEntry PickupEntry)
-// {
-// 	FInventoryEntry* InventoryEntry = Entries.FindByPredicate(
-// 		[PickupEntry](const FInventoryEntry& Entry)
-// 		{
-// 			return Entry.ItemDef == PickupEntry.ItemDef;
-// 		});
-// 	
-// 	if(!InventoryEntry)
-// 	{
-// 		
-// 	}
-// }
 
 FInventoryEntry* UInventoryComponent::GetOrCreateEntry(UInventoryItemDefinition* PickupItem, EInventoryGroup Group)
 {
@@ -73,7 +64,6 @@ FInventoryEntry* UInventoryComponent::GetOrCreateEntry(UInventoryItemDefinition*
 	return InventoryEntry;
 }
 
-
 int32 UInventoryComponent::AddItems(FInventoryEntry* Entry, const EInventoryGroup Group, const int32 MaxItemsPerStack, const int32 MaxItemsTotal, const int32 PickupItemCount)
 {
 	// How much space is left in total considering the partially filled Stack and all empty Stacks in the Group?
@@ -98,7 +88,15 @@ int32 UInventoryComponent::AddItems(FInventoryEntry* Entry, const EInventoryGrou
 
 int32 UInventoryComponent::AddItemDefinition(const FInventoryEntry& PickupEntry)
 {
-	// Get Item Layout and Group
+	const UInventoryFragment_AttachableItem* Attachable = Cast<UInventoryFragment_AttachableItem>(
+		PickupEntry.ItemDef->FindFragmentByClass(UInventoryFragment_AttachableItem::StaticClass()));	
+	if(Attachable)
+	{
+		AItem* Item = GetWorld()->SpawnActor<AItem>(Attachable->ItemClass, FTransform());
+		GetEiraCharacterOwner()->AttachToSocket(Item, Attachable->AttachSocket);
+	}
+	
+	// Get ItemClass Layout and Group
 	const UInventoryFragment_InventoryEntryLayout* Layout = Cast<UInventoryFragment_InventoryEntryLayout>(
 		PickupEntry.ItemDef->FindFragmentByClass(UInventoryFragment_InventoryEntryLayout::StaticClass()));	
 	if(!Layout)
@@ -113,7 +111,7 @@ int32 UInventoryComponent::AddItemDefinition(const FInventoryEntry& PickupEntry)
 	// If there is no free stack left in the inventory group no Entry will be created
 	if(!Entry)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s -> %s"), *FString(__FUNCTION__), *FString("Item could not be added because there is no free stack left in the inventory group"));
+		UE_LOG(LogTemp, Warning, TEXT("%s -> %s"), *FString(__FUNCTION__), *FString("ItemClass could not be added because there is no free stack left in the inventory group"));
 		return 0;
 	}
 
@@ -152,6 +150,23 @@ int32 UInventoryComponent::RemoveItemDefinition(const FInventoryEntry& DropEntry
 	UpdateInventory.Broadcast(Entries);
 
 	return ItemsRemoved;	
+}
+
+void UInventoryComponent::Select(const UInventoryItemDefinition* ItemDef)
+{
+	const UInventoryFragment_EquippableItem* Equippable = Cast<UInventoryFragment_EquippableItem>(
+		ItemDef->FindFragmentByClass(UInventoryFragment_EquippableItem::StaticClass()));
+
+	if(Equippable)
+	{
+		AItem* Item = GetWorld()->SpawnActor<AItem>(Equippable->ItemClass, FTransform());
+		GetEiraCharacterOwner()->Equip(Item, Equippable->AttachSocket);
+	}
+}
+
+AEiraCharacter* UInventoryComponent::GetEiraCharacterOwner()
+{
+	return EiraCharacterOwner;
 }
 
 
