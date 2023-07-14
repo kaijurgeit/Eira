@@ -11,8 +11,6 @@
 #include "Inventory/InventoryItemDefinition.h"
 #include "Player/EiraCharacter.h"
 
-UE_DISABLE_OPTIMIZATION
-
 void UInventoryMenu::NativeConstruct()
 {
 	Super::NativeConstruct();

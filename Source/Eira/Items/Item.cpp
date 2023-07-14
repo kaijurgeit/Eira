@@ -6,8 +6,6 @@
 #include "Components/MaterialBillboardComponent.h"
 #include "Inventory/InventoryItemDefinition.h"
 
-UE_DISABLE_OPTIMIZATION
-
 // Sets default values
 AItem::AItem()
 {

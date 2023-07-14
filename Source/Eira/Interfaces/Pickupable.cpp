@@ -6,8 +6,6 @@
 #include "Inventory/InventoryItemDefinition.h"
 #include "Inventory/InventoryComponent.h"
 
-UE_DISABLE_OPTIMIZATION
-
 class UActorComponent;
 
 TScriptInterface<IPickupable> UPickupableStatics::GetFirstPickupableFromActor(AActor* Actor)
@@ -39,13 +37,7 @@ void UPickupableStatics::AddPickupToInventory(UInventoryComponent* InventoryComp
 		// TArray<FInventoryEntry> PickupInventoryEntries = Pickup->GetPickupInventory();
 		for (FInventoryClassEntry& PickupClassEntry : PickupInventoryClassEntries)
 		{
-			FInventoryEntry PickupEntry;
-			PickupEntry.ItemDef = NewObject<UInventoryItemDefinition>(PickupClassEntry.ItemDef);
-			PickupEntry.ItemDef = NewObject<UInventoryItemDefinition>(PickupClassEntry.ItemDef, NAME_None, RF_NoFlags, PickupClassEntry.ItemDef->GetDefaultObject(), true);
-			PickupEntry.ItemDef->Fragments = GetDefault<UInventoryItemDefinition>(PickupClassEntry.ItemDef)->Fragments;
-			PickupEntry.Count =  PickupClassEntry.Count;
-			
-			int32 ItemsAdded = InventoryComponent->AddItemDefinition(PickupEntry);
+			const int32 ItemsAdded = InventoryComponent->AddItemDefinition(PickupClassEntry.ItemDef, PickupClassEntry.Count);
 			PickupClassEntry.Count -= ItemsAdded;
 		}
 	}

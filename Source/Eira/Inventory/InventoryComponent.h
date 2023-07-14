@@ -33,7 +33,7 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable)
-	int32 AddItemDefinition(const FInventoryEntry& PickupEntry);
+	int32 AddItemDefinition(TSubclassOf<UInventoryItemDefinition> ItemDefClass, int32 Count);	
 	
 	UFUNCTION(BlueprintCallable)
 	int32 RemoveItemDefinition(const FInventoryEntry& DropEntry);
@@ -58,5 +58,5 @@ private:
 	
 	int32 AddItems(FInventoryEntry* Entry, EInventoryGroup Group, int32 MaxItemsPerStack, int32 MaxItemsTotal, int32 PickupItemCount);
 	FInventoryEntry* GetOrCreateEntry(UInventoryItemDefinition* PickupItem, EInventoryGroup Group);
-	bool TryAttachItem(const FInventoryEntry& PickupEntry);
+	bool TryAttachItem(UInventoryItemDefinition* ItemDef);
 };
