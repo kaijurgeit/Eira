@@ -1,9 +1,9 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "FullMenuWidget.h"
+#include "InventoryMenu.h"
 
-#include "InventorySlot.h"
+#include "InventoryMenuSlot.h"
 #include "Components/GridPanel.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -11,7 +11,9 @@
 #include "Inventory/InventoryItemDefinition.h"
 #include "Player/EiraCharacter.h"
 
-void UFullMenuWidget::NativeConstruct()
+UE_DISABLE_OPTIMIZATION
+
+void UInventoryMenu::NativeConstruct()
 {
 	Super::NativeConstruct();
 
@@ -20,18 +22,18 @@ void UFullMenuWidget::NativeConstruct()
 		InventoryComponent = Cast<UInventoryComponent>(PlayerCharacter->GetComponentByClass(UInventoryComponent::StaticClass()));
 		if(InventoryComponent)
 		{
-			InventoryComponent->UpdateInventory.AddUniqueDynamic(this, &UFullMenuWidget::UpdateInventory);
+			InventoryComponent->UpdateInventory.AddUniqueDynamic(this, &UInventoryMenu::UpdateInventory);
 		}	
 	}
 }
 
-void UFullMenuWidget::UpdateInventory_Implementation(const TArray<FInventoryEntry>& Inventory)
+void UInventoryMenu::UpdateInventory_Implementation(const TArray<FInventoryEntry>& Inventory)
 {
 	GridResources->ClearChildren();
 }
 
 
-int UFullMenuWidget::CreateInventorySlots(const FInventoryEntry& Entry, int32 ColCount, int32 StartIndex)
+int UInventoryMenu::CreateInventorySlots(const FInventoryEntry& Entry, int32 ColCount, int32 StartIndex)
 {
 	int ColIndex = StartIndex;
 	const UInventoryFragment_InventoryEntryLayout* Layout = Entry.ItemDef->FindFragmentByClass<UInventoryFragment_InventoryEntryLayout>();
@@ -43,7 +45,7 @@ int UFullMenuWidget::CreateInventorySlots(const FInventoryEntry& Entry, int32 Co
 
 	for (int i = 0; i < StackCount; ++i)
 	{
-		UInventorySlot* InventorySlot = Cast<UInventorySlot>(CreateWidget(this, SlotClass));
+		UInventoryMenuSlot* InventorySlot = Cast<UInventoryMenuSlot>(CreateWidget(this, SlotClass));
 		InventorySlot->ItemDef = Entry.ItemDef;
 		if(UTextBlock* TextBlock = Cast<UTextBlock>(InventorySlot->CountText))
 		{
@@ -52,9 +54,9 @@ int UFullMenuWidget::CreateInventorySlots(const FInventoryEntry& Entry, int32 Co
 			const FText Text = FText::FromString(String);
 			TextBlock->SetText(Text);
 			InventorySlot->Count = Count;
-			// TODO
-			InventorySlot->Icon->Brush = FSlateBrush();			
-			InventorySlot->Icon->Brush.SetImageSize(FVector2d(100.f, 100.f));
+			FSlateBrush Brush;
+			Brush.SetImageSize(FVector2d(100.f, 100.f));
+			InventorySlot->Icon->SetBrush(Brush);
 			InventorySlot->Icon->SetBrushFromTexture(Layout->IconTexture);				
 			InventorySlot->Icon->SetBrushTintColor(HighlightColor);	
 		}

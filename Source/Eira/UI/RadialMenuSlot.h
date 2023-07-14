@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "QuickAccessSlot.generated.h"
+#include "RadialMenuSlot.generated.h"
 
 class UTextLayoutWidget;
 class UImage;
@@ -12,7 +12,7 @@ class UImage;
  * 
  */
 UCLASS()
-class EIRA_API UQuickAccessSlot : public UUserWidget
+class EIRA_API URadialMenuSlot : public UUserWidget
 {
 	GENERATED_BODY()
 public:

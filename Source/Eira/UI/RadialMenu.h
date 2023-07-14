@@ -6,21 +6,22 @@
 #include "Blueprint/UserWidget.h"
 #include "Inventory/ItemFragments/InventoryItemFragment_QuickAccess.h"
 
-#include "RadialMenuWidget.generated.h"
+#include "RadialMenu.generated.h"
 
 class UImage;
 class UCanvasPanel;
 class USizeBox;
-class UInventorySlot;
+class UInventoryMenuSlot;
 class UInventoryComponent;
 
 UCLASS(Blueprintable)
-class EIRA_API URadialMenuWidget : public UUserWidget
+class EIRA_API URadialMenu : public UUserWidget
 {
 	GENERATED_BODY()
 public:	
 	UFUNCTION(BlueprintCallable)
 	void SelectItemFromInventory();
+
 	UFUNCTION(BlueprintCallable)
 	void DropItemFromInventory();
 	
@@ -28,8 +29,6 @@ protected:
 	virtual void NativeConstruct() override;
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdateSectors(const TArray<FInventoryEntry>& Inventory);
-	void InitializeDesign();
-	void HighlightSector();
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	
 	UPROPERTY(BlueprintReadOnly, Category = "TheGame|UI", meta = (BindWidget))
@@ -59,16 +58,14 @@ private:
 	UPROPERTY()
 	TObjectPtr<UInventoryComponent> InventoryComponent;
 	
-	
-	// void UpdateCount(FStorageInfo SlotInfo, const FSectorInfo& SectorInfo) const;
-	// void UpdateCount(const FSectorInfo& SectorInfo, const FStorageInfo& SlotInfo) const;
-	// void UpdateIcon(FStorageInfo SlotInfo, const FSectorInfo& SectorInfo) const;
 
+	void InitializeDesign();
 	void SetMenuCenterOnViewport();	
+	void HighlightSector();
 	float GetMouseAngle() const;
 	int GetIndexByAngle(float MouseAngle) const;
 	void GetChildImages(int SectorIndex, UImage*& BackgroundImage, UImage*& IconImage);
-	UQuickAccessSlot* GetInventorySlot(int SectorIndex);
+	URadialMenuSlot* GetInventorySlot(int SectorIndex);
 	void Highlight(UImage* Image, bool IsHovered) const;
 	void HighlightByIndex(float SectorIndex, bool IsHovered);
 	void SetCountPositionByIndex(int i);

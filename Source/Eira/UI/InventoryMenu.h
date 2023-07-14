@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Interfaces/Pickupable.h"
 #include "UMG/Public/Blueprint/UserWidget.h"
-#include "FullMenuWidget.generated.h"
+#include "InventoryMenu.generated.h"
 
 class UInventorySlot;
 class UGridPanel;
@@ -13,7 +13,7 @@ class UGridPanel;
  * 
  */
 UCLASS(Blueprintable)
-class EIRA_API UFullMenuWidget : public UUserWidget
+class EIRA_API UInventoryMenu : public UUserWidget
 {
 	GENERATED_BODY()
 	
@@ -25,6 +25,9 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UGridPanel> GridResources;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UGridPanel> GridWeapons;
 	
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdateInventory(const TArray<FInventoryEntry>& Inventory);

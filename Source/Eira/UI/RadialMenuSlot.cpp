@@ -1,12 +1,12 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "QuickAccessSlot.h"
+#include "RadialMenuSlot.h"
 
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 
-void UQuickAccessSlot::UpdateCount(int Count, int Max)
+void URadialMenuSlot::UpdateCount(int Count, int Max)
 {
 	if(UTextBlock* TextBlock = Cast<UTextBlock>(CountText))
 	{
@@ -26,13 +26,11 @@ void UQuickAccessSlot::UpdateCount(int Count, int Max)
 	
 }
 
-void UQuickAccessSlot::UpdateIcon(int Count, UTexture2D* IconTexture)
+void URadialMenuSlot::UpdateIcon(int Count, UTexture2D* IconTexture)
 {
 	// If no item in Slot remove Icon
 	if(Count == 0)
 	{
-		// TODO
-		Icon->Brush = FSlateBrush();			
 		Icon->SetBrushTintColor(NoColor);
 		return;
 	}

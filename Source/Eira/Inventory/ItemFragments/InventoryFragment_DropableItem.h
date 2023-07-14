@@ -18,7 +18,4 @@ class EIRA_API UInventoryFragment_DropableItem : public UInventoryItemFragment
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Inventory)
 	TSubclassOf<AItem> DropableItem;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Inventory)
-	FTransform SpawnTransform;
 };

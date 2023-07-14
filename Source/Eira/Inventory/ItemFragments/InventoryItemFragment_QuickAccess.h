@@ -8,7 +8,7 @@
 
 class UInventoryItemDefinition;
 class USizeBox;
-class UQuickAccessSlot;
+class URadialMenuSlot;
 
 
 UENUM(BlueprintType)
@@ -40,7 +40,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = QuickAccessMenu)
 	int Slot;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = QuickAccessMenu)
-	UQuickAccessSlot* Sector;	
+	URadialMenuSlot* Sector;	
 	// UPROPERTY(BlueprintReadWrite, Category = QuickAccessMenu)
 	// UInventoryItemDefinition ItemDefinition;	
 };

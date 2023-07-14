@@ -7,7 +7,7 @@
 #include "Items/Item.h"
 #include "Player/EiraCharacter.h"
 
-// UE_DISABLE_OPTIMIZATION
+UE_DISABLE_OPTIMIZATION
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
@@ -30,71 +30,9 @@ void UInventoryComponent::BeginPlay()
 	FreeStacksPerGroup = TMap<EInventoryGroup, int32>(MaxStacksPerGroup);
 }
 
-
-// Called every frame
-void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-                                        FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-
-FInventoryEntry* UInventoryComponent::GetOrCreateEntry(UInventoryItemDefinition* PickupItem, EInventoryGroup Group)
-{
-	FInventoryEntry* InventoryEntry = Entries.FindByPredicate(
-		[PickupItem](const FInventoryEntry& Entry)
-		{
-			return Entry.ItemDef->StaticClass() == PickupItem->StaticClass();
-		});
-
-	if(InventoryEntry)
-	{
-		return InventoryEntry;
-	}
-	
-	if(FreeStacksPerGroup[Group] == 0)
-	{
-		return nullptr;
-	}
-
-	InventoryEntry = &Entries.AddDefaulted_GetRef();
-	InventoryEntry->ItemDef = PickupItem;
-	FreeStacksPerGroup[Group] -= 1;
-	return InventoryEntry;
-}
-
-int32 UInventoryComponent::AddItems(FInventoryEntry* Entry, const EInventoryGroup Group, const int32 MaxItemsPerStack, const int32 MaxItemsTotal, const int32 PickupItemCount)
-{
-	// How much space is left in total considering the partially filled Stack and all empty Stacks in the Group?
-	const int32 FreeSpaceInStack = MaxItemsPerStack - (Entry->Count % MaxItemsPerStack);
-	int32 FreeSpaceInTotal = FreeStacksPerGroup[Group] * MaxItemsPerStack + FreeSpaceInStack;
-	FreeSpaceInTotal = ((FreeStacksPerGroup[Group] == 0) && (FreeSpaceInTotal == 10)) ? 0 : FreeSpaceInTotal;
-	// MaxItemsTotal == 0 means that there is now limit regarding total item count and all free space can be used
-	FreeSpaceInTotal = (MaxItemsTotal == 0) ? FreeSpaceInTotal : FMath::Min(FreeSpaceInTotal, MaxItemsTotal);
-
-	// Add to Inventory
-	const int32 OldCount = Entry->Count; 
-	const int32 NewItemCount = (PickupItemCount > FreeSpaceInTotal) ? OldCount + FreeSpaceInTotal : OldCount + PickupItemCount;
-	Entry->Count = NewItemCount;
-
-	// Update FreeStacksPerGroup
-	const int32 NewStacksUsed = ((NewItemCount - 1) / MaxItemsPerStack) - ((OldCount - 1) / MaxItemsPerStack);
-	FreeStacksPerGroup[Group] -= NewStacksUsed;
-
-	const int32 ItemsAdded = NewItemCount - OldCount;
-	return ItemsAdded;
-}
-
 int32 UInventoryComponent::AddItemDefinition(const FInventoryEntry& PickupEntry)
 {
-	const UInventoryFragment_AttachableItem* Attachable = Cast<UInventoryFragment_AttachableItem>(
-		PickupEntry.ItemDef->FindFragmentByClass(UInventoryFragment_AttachableItem::StaticClass()));	
-	if(Attachable)
-	{
-		AItem* Item = GetWorld()->SpawnActor<AItem>(Attachable->ItemClass, FTransform());
-		GetEiraCharacterOwner()->AttachToSocket(Item, Attachable->AttachSocket);
-	}
+	TryAttachItem(PickupEntry);
 	
 	// Get ItemClass Layout and Group
 	const UInventoryFragment_InventoryEntryLayout* Layout = Cast<UInventoryFragment_InventoryEntryLayout>(
@@ -169,4 +107,62 @@ AEiraCharacter* UInventoryComponent::GetEiraCharacterOwner()
 	return EiraCharacterOwner;
 }
 
+int32 UInventoryComponent::AddItems(FInventoryEntry* Entry, const EInventoryGroup Group, const int32 MaxItemsPerStack, const int32 MaxItemsTotal, const int32 PickupItemCount)
+{
+	// How much space is left in total considering the partially filled Stack and all empty Stacks in the Group?
+	const int32 FreeSpaceInStack = MaxItemsPerStack - (Entry->Count % MaxItemsPerStack);
+	int32 FreeSpaceInTotal = FreeStacksPerGroup[Group] * MaxItemsPerStack + FreeSpaceInStack;
+	FreeSpaceInTotal = ((FreeStacksPerGroup[Group] == 0) && (FreeSpaceInTotal == 10)) ? 0 : FreeSpaceInTotal;
+	// MaxItemsTotal == 0 means that there is now limit regarding total item count and all free space can be used
+	FreeSpaceInTotal = (MaxItemsTotal == 0) ? FreeSpaceInTotal : FMath::Min(FreeSpaceInTotal, MaxItemsTotal);
+
+	// Add to Inventory
+	const int32 OldCount = Entry->Count; 
+	const int32 NewItemCount = (PickupItemCount > FreeSpaceInTotal) ? OldCount + FreeSpaceInTotal : OldCount + PickupItemCount;
+	Entry->Count = NewItemCount;
+
+	// Update FreeStacksPerGroup
+	const int32 NewStacksUsed = ((NewItemCount - 1) / MaxItemsPerStack) - ((OldCount - 1) / MaxItemsPerStack);
+	FreeStacksPerGroup[Group] -= NewStacksUsed;
+
+	const int32 ItemsAdded = NewItemCount - OldCount;
+	return ItemsAdded;
+}
+
+FInventoryEntry* UInventoryComponent::GetOrCreateEntry(UInventoryItemDefinition* PickupItem, EInventoryGroup Group)
+{
+	FInventoryEntry* InventoryEntry = Entries.FindByPredicate(
+		[PickupItem](const FInventoryEntry& Entry)
+		{
+			return Entry.ItemDef->StaticClass() == PickupItem->StaticClass();
+		});
+
+	if(InventoryEntry)
+	{
+		return InventoryEntry;
+	}
+	
+	if(FreeStacksPerGroup[Group] == 0)
+	{
+		return nullptr;
+	}
+
+	InventoryEntry = &Entries.AddDefaulted_GetRef();
+	InventoryEntry->ItemDef = PickupItem;
+	FreeStacksPerGroup[Group] -= 1;
+	return InventoryEntry;
+}
+
+bool UInventoryComponent::TryAttachItem(const FInventoryEntry& PickupEntry)
+{
+	const UInventoryFragment_AttachableItem* Attachable = Cast<UInventoryFragment_AttachableItem>(
+		PickupEntry.ItemDef->FindFragmentByClass(UInventoryFragment_AttachableItem::StaticClass()));	
+	if(Attachable)
+	{
+		AItem* Item = GetWorld()->SpawnActor<AItem>(Attachable->ItemClass, FTransform());
+		GetEiraCharacterOwner()->AttachToSocket(Item, Attachable->AttachSocket);
+		return true;
+	}
+	return false;
+}
 

@@ -32,10 +32,6 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
-
 	UFUNCTION(BlueprintCallable)
 	int32 AddItemDefinition(const FInventoryEntry& PickupEntry);
 	
@@ -57,8 +53,10 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<AEiraCharacter> EiraCharacterOwner;
+		
+	AEiraCharacter* GetEiraCharacterOwner();
 	
 	int32 AddItems(FInventoryEntry* Entry, EInventoryGroup Group, int32 MaxItemsPerStack, int32 MaxItemsTotal, int32 PickupItemCount);
-	FInventoryEntry* GetOrCreateEntry(UInventoryItemDefinition* PickupItem, EInventoryGroup Group);	
-	AEiraCharacter* GetEiraCharacterOwner();
+	FInventoryEntry* GetOrCreateEntry(UInventoryItemDefinition* PickupItem, EInventoryGroup Group);
+	bool TryAttachItem(const FInventoryEntry& PickupEntry);
 };

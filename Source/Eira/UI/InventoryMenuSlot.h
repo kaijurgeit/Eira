@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "UObject/Object.h"
-#include "InventorySlot.generated.h"
+#include "InventoryMenuSlot.generated.h"
 
 class UButton;
 class UInventoryItemDefinition;
@@ -16,7 +16,7 @@ class UImage;
  * 
  */
 UCLASS(Blueprintable)
-class EIRA_API UInventorySlot : public UUserWidget
+class EIRA_API UInventoryMenuSlot : public UUserWidget
 {
 	GENERATED_BODY()
 
