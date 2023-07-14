@@ -36,6 +36,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UGridPanel> GridCraft;
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UGridPanel> GridProps;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UGridPanel> GridCraft;
+	
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdateInventory(const TArray<FInventoryEntry>& Inventory);
 
