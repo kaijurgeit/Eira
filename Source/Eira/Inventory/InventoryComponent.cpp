@@ -7,8 +7,6 @@
 #include "Items/Item.h"
 #include "Player/EiraCharacter.h"
 
-UE_DISABLE_OPTIMIZATION
-
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
 {

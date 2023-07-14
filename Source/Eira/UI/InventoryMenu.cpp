@@ -27,9 +27,29 @@ void UInventoryMenu::NativeConstruct()
 
 void UInventoryMenu::UpdateInventory_Implementation(const TArray<FInventoryEntry>& Inventory)
 {
+	GridWeapons->ClearChildren();
 	GridResources->ClearChildren();
+	GridProps->ClearChildren();
+	GridCraft->ClearChildren();
 }
 
+
+UGridPanel* UInventoryMenu::SelectGridPanel(const UInventoryFragment_InventoryEntryLayout* Layout)
+{
+	switch (Layout->Group)
+	{
+	case EInventoryGroup::Resources:
+		return GridResources;
+	case EInventoryGroup::Weapons:
+		return GridWeapons;
+	case EInventoryGroup::Props:
+		return GridProps;
+	case EInventoryGroup::Craft:
+		return GridCraft;
+	default:
+		return nullptr;
+	}
+}
 
 int UInventoryMenu::CreateInventorySlots(const FInventoryEntry& Entry, int32 ColCount, int32 StartIndex)
 {
@@ -41,6 +61,9 @@ int UInventoryMenu::CreateInventorySlots(const FInventoryEntry& Entry, int32 Col
 	int32 StackCount = Entry.Count / Layout->MaxItemsPerStack;
 	StackCount = (RestCount == 0) ? StackCount : StackCount + 1;
 
+	
+	UGridPanel* GridPanel = SelectGridPanel(Layout);
+
 	for (int i = 0; i < StackCount; ++i)
 	{
 		UInventoryMenuSlot* InventorySlot = Cast<UInventoryMenuSlot>(CreateWidget(this, SlotClass));
@@ -50,7 +73,7 @@ int UInventoryMenu::CreateInventorySlots(const FInventoryEntry& Entry, int32 Col
 		InventorySlot->UpdateIcon(Count, Layout->IconTexture);
 	
 		ColIndex += i;
-		GridResources->AddChildToGrid(InventorySlot, ColIndex / ColCount, ColIndex % ColCount);
+		GridPanel->AddChildToGrid(InventorySlot, ColIndex / ColCount, ColIndex % ColCount);
 	}
 	return ColIndex;
 }
