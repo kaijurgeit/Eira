@@ -68,35 +68,29 @@ int32 UInventoryComponent::AddItemDefinition(TSubclassOf<UInventoryItemDefinitio
 	return ItemsAdded;
 }
 
-int32 UInventoryComponent::RemoveItemDefinition(const FInventoryEntry& DropEntry)
+
+int32 UInventoryComponent::RemoveItemDefinition(UInventoryItemDefinition* ItemDef, int32 Count)
 {	
 	const UInventoryFragment_InventoryEntryLayout* Layout = Cast<UInventoryFragment_InventoryEntryLayout>(
-		DropEntry.ItemDef->FindFragmentByClass(UInventoryFragment_InventoryEntryLayout::StaticClass()));
+		ItemDef->FindFragmentByClass(UInventoryFragment_InventoryEntryLayout::StaticClass()));
 	if(!Layout)
 	{
 		UE_LOG(LogTemp, Warning, TEXT(	"%s -> %s"), *FString(__FUNCTION__), *FString("No Entry Layout"));
 		return 0;
 	}
 	
-	int32 ItemsRemoved = 0;
 	const int Index = Entries.FindLastByPredicate(
-		[DropEntry](const FInventoryEntry& Entry)
+		[ItemDef](const FInventoryEntry& Entry)
 		{
-			return Entry.ItemDef->StaticClass() == DropEntry.ItemDef->StaticClass();
+			return Entry.ItemDef->IsA(ItemDef->GetClass());
 		});
-	if(Index == INDEX_NONE) { return ItemsRemoved; }
-	
-	ItemsRemoved = FMath::Min(DropEntry.Count, Entries[Index].Count);
-	Entries[Index].Count -= ItemsRemoved;
+	if(Index == INDEX_NONE) { return 0; }
 
-	if(Entries[Index].Count == 0)
-	{
-		Entries.RemoveAt(Index);
-		FreeStacksPerGroup[Layout->Group] += 1;
-	}
+	const int32 ItemsRemoved = RemoveItems(Layout->Group, Layout->MaxItemsPerStack, Count, Index);
+	
 	UpdateInventory.Broadcast(Entries);
 
-	return ItemsRemoved;	
+	return ItemsRemoved;
 }
 
 void UInventoryComponent::Select(const UInventoryItemDefinition* ItemDef)
@@ -116,6 +110,13 @@ AEiraCharacter* UInventoryComponent::GetEiraCharacterOwner()
 	return EiraCharacterOwner;
 }
 
+void UInventoryComponent::UpdateFreeStacks(const EInventoryGroup Group, const int32 MaxItemsPerStack, const int32 OldCount, const int32 NewCount)
+{
+	const int32 NewStacksUsed = (NewCount / MaxItemsPerStack) - (OldCount / MaxItemsPerStack);
+	FreeStacksPerGroup[Group] -= NewStacksUsed;
+	FreeStacksPerGroup[Group] = FMath::Clamp(FreeStacksPerGroup[Group], 0, MaxStacksPerGroup[Group]);
+}
+
 int32 UInventoryComponent::AddItems(FInventoryEntry* Entry, const EInventoryGroup Group, const int32 MaxItemsPerStack, const int32 MaxItemsTotal, const int32 PickupItemCount)
 {
 	// How much space is left in total considering the partially filled Stack and all empty Stacks in the Group?
@@ -127,16 +128,31 @@ int32 UInventoryComponent::AddItems(FInventoryEntry* Entry, const EInventoryGrou
 	FreeSpaceInTotal = FMath::Max(0, FreeSpaceInTotal);
 
 	// Add to Inventory
-	const int32 OldCount = Entry->Count; 
+	const int32 OldCount = Entry->Count;
 	const int32 NewCount = (PickupItemCount > FreeSpaceInTotal) ? OldCount + FreeSpaceInTotal : OldCount + PickupItemCount;
 	Entry->Count = NewCount;
 
 	// Update FreeStacksPerGroup
-	const int32 NewStacksUsed = (NewCount / MaxItemsPerStack) - (OldCount / MaxItemsPerStack);
-	FreeStacksPerGroup[Group] -= NewStacksUsed;
+	UpdateFreeStacks(Group, MaxItemsPerStack, OldCount, NewCount);
 
 	const int32 ItemsAdded = NewCount - OldCount;
 	return ItemsAdded;
+}
+
+int32 UInventoryComponent::RemoveItems(EInventoryGroup Group, int32 MaxItemsPerStack, int32 Count, const int Index)
+{
+	const int32 ItemsRemoved = FMath::Min(Count, Entries[Index].Count);
+	const int32 OldCount = Entries[Index].Count;
+	Entries[Index].Count -= ItemsRemoved;
+
+	UpdateFreeStacks(Group, MaxItemsPerStack, OldCount, Entries[Index].Count);
+	
+	if(Entries[Index].Count == 0)
+	{
+		Entries.RemoveAt(Index);
+	}
+	
+	return ItemsRemoved;
 }
 
 FInventoryEntry* UInventoryComponent::GetOrCreateEntry(UInventoryItemDefinition* PickupItem, EInventoryGroup Group)

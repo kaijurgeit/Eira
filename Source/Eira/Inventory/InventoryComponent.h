@@ -33,10 +33,10 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable)
-	int32 AddItemDefinition(TSubclassOf<UInventoryItemDefinition> ItemDefClass, int32 Count);	
-	
+	int32 AddItemDefinition(TSubclassOf<UInventoryItemDefinition> ItemDefClass, int32 Count);
+
 	UFUNCTION(BlueprintCallable)
-	int32 RemoveItemDefinition(const FInventoryEntry& DropEntry);
+	int32 RemoveItemDefinition(UInventoryItemDefinition* ItemDef, int32 Count);
 
 	UFUNCTION(BlueprintCallable)
 	void Select(const UInventoryItemDefinition* ItemDef);
@@ -55,8 +55,10 @@ private:
 	TObjectPtr<AEiraCharacter> EiraCharacterOwner;
 		
 	AEiraCharacter* GetEiraCharacterOwner();
-	
+	void UpdateFreeStacks(EInventoryGroup Group, int32 MaxItemsPerStack, int32 OldCount, int32 NewCount);
+
 	int32 AddItems(FInventoryEntry* Entry, EInventoryGroup Group, int32 MaxItemsPerStack, int32 MaxItemsTotal, int32 PickupItemCount);
+	int32 RemoveItems(EInventoryGroup Group, int32 MaxItemsPerStack, int32 Count, const int Index);
 	FInventoryEntry* GetOrCreateEntry(UInventoryItemDefinition* PickupItem, EInventoryGroup Group);
 	bool TryAttachItem(UInventoryItemDefinition* ItemDef);
 };
