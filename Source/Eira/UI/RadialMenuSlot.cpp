@@ -6,18 +6,18 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 
-void URadialMenuSlot::UpdateCount(int Count, int Max)
+void URadialMenuSlot::UpdateCount(int ItemCount, int MaxItemCount)
 {
 	if(UTextBlock* TextBlock = Cast<UTextBlock>(CountText))
 	{
 		FString String;
-		if(Count == 0 || Max < 2)
+		if(ItemCount == 0 || MaxItemCount == 1)
 		{
-			String = FString("XXX");
+			String = FString("");
 		}
 		else
 		{
-			String = FString::Printf(TEXT("%d/%d"), Count, Max);						
+			String = FString::Printf(TEXT("%d/%d"), ItemCount, MaxItemCount);						
 		}
 		const FText Text = FText::FromString(String);
 		TextBlock->SetText(Text);
@@ -26,10 +26,10 @@ void URadialMenuSlot::UpdateCount(int Count, int Max)
 	
 }
 
-void URadialMenuSlot::UpdateIcon(int Count, UTexture2D* IconTexture)
+void URadialMenuSlot::UpdateIcon(int ItemCount, UTexture2D* IconTexture)
 {
 	// If no item in Slot remove Icon
-	if(Count == 0)
+	if(ItemCount == 0)
 	{
 		Icon->SetBrushTintColor(NoColor);
 		return;

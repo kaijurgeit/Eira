@@ -20,9 +20,15 @@ class EIRA_API UInventoryMenuSlot : public UUserWidget
 {
 	GENERATED_BODY()
 
-public:
+public:	
 	UPROPERTY(BlueprintReadOnly)
 	int Count = 1;
+	
+	UFUNCTION(BlueprintCallable)
+	void UpdateCount(int ItemCount, int MaxItemCount);
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateIcon(int ItemCount, UTexture2D* IconTexture);
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UTextLayoutWidget> CountText;
@@ -32,4 +38,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UImage> Icon;
+
+private:	
+	FLinearColor HighlightColor = FLinearColor(1.f, 1.f, 1.f, 1.f);
 };

@@ -31,11 +31,16 @@ public:
 	EInventoryGroup Group = EInventoryGroup::None;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 MaxItemsPerStack = 0;
-	
+	int32 MaxItemsPerStack = 1;
+
+	// If set to 0 there is no limit
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 MaxItemsTotal = 0;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UTexture2D> IconTexture;
+
+protected:
+	virtual bool CanEditChange(const FProperty* InProperty) const override;
+	bool IsEditable() const;
 };

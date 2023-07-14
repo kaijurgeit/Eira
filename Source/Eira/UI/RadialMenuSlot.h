@@ -17,10 +17,10 @@ class EIRA_API URadialMenuSlot : public UUserWidget
 	GENERATED_BODY()
 public:
 	UFUNCTION(BlueprintCallable)
-	void UpdateCount(int Count, int Max);
+	void UpdateCount(int ItemCount, int MaxItemCount);
 
 	UFUNCTION(BlueprintCallable)
-	void UpdateIcon(int Count, UTexture2D* IconTexture);
+	void UpdateIcon(int ItemCount, UTexture2D* IconTexture);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UImage> Icon;

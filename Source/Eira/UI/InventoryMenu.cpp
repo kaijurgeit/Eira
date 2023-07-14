@@ -45,19 +45,10 @@ int UInventoryMenu::CreateInventorySlots(const FInventoryEntry& Entry, int32 Col
 	{
 		UInventoryMenuSlot* InventorySlot = Cast<UInventoryMenuSlot>(CreateWidget(this, SlotClass));
 		InventorySlot->ItemDef = Entry.ItemDef;
-		if(UTextBlock* TextBlock = Cast<UTextBlock>(InventorySlot->CountText))
-		{
-			const int32 Count = (i < (StackCount - 1) || (RestCount == 0)) ? Layout->MaxItemsPerStack : RestCount;
-			FString String = FString::Printf(TEXT("%d/%d"), Count, Layout->MaxItemsPerStack);
-			const FText Text = FText::FromString(String);
-			TextBlock->SetText(Text);
-			InventorySlot->Count = Count;
-			FSlateBrush Brush;
-			Brush.SetImageSize(FVector2d(100.f, 100.f));
-			InventorySlot->Icon->SetBrush(Brush);
-			InventorySlot->Icon->SetBrushFromTexture(Layout->IconTexture);				
-			InventorySlot->Icon->SetBrushTintColor(HighlightColor);	
-		}
+		const int32 Count = (i < (StackCount - 1) || (RestCount == 0)) ? Layout->MaxItemsPerStack : RestCount;
+		InventorySlot->UpdateCount(Count, Layout->MaxItemsPerStack);
+		InventorySlot->UpdateIcon(Count, Layout->IconTexture);
+	
 		ColIndex += i;
 		GridResources->AddChildToGrid(InventorySlot, ColIndex / ColCount, ColIndex % ColCount);
 	}

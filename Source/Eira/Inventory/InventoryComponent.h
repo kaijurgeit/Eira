@@ -40,9 +40,16 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void Select(const UInventoryItemDefinition* ItemDef);
-	
+
+	// If 0, there are infinite Stacks e.g. Quests
 	UPROPERTY(EditDefaultsOnly)
-	TMap<EInventoryGroup, int32> MaxStacksPerGroup = {{ EInventoryGroup::Resources, 3 }};
+	TMap<EInventoryGroup, int32> MaxStacksPerGroup = {
+		{ EInventoryGroup::Quests, 0 },
+		{ EInventoryGroup::Weapons, 4 },
+		{ EInventoryGroup::Props, 5 },
+		{ EInventoryGroup::Resources, 3 },
+		{ EInventoryGroup::Craft, 6 }
+	};
 
 private:
 	UPROPERTY()
