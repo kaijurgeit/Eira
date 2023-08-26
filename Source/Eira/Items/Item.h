@@ -38,10 +38,13 @@ public:
 	void Attach();
 	void UnAttach();
 	
+	virtual TArray<FInventoryClassEntry>& GetPickupInventory() override;
+
+	UFUNCTION(BlueprintCallable)
+	void AddToInventory(UInventoryComponent* InventoryComponent);
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, category = Inventory)
 	TObjectPtr<UTexture2D> Icon;
-
-	virtual TArray<FInventoryClassEntry>& GetPickupInventory() override;	
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = Inventory)
 	TArray<FInventoryClassEntry> StaticInventory;

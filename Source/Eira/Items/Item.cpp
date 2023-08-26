@@ -4,6 +4,7 @@
 #include "Item.h"
 
 #include "Components/MaterialBillboardComponent.h"
+#include "Inventory/InventoryComponent.h"
 #include "Inventory/InventoryItemDefinition.h"
 
 // Sets default values
@@ -49,13 +50,21 @@ void AItem::UnAttach()
 }
 
 TArray<FInventoryClassEntry>& AItem::GetPickupInventory()
-{
-	// TODO: Remove	
-	UInventoryItemDefinition* ItemDef = NewObject<UInventoryItemDefinition>(this, StaticInventory[0].ItemDef, NAME_None, RF_NoFlags, StaticInventory[0].ItemDef->GetDefaultObject(), true);
-	ItemDef->Fragments = GetDefault<UInventoryItemDefinition>(StaticInventory[0].ItemDef)->Fragments;
-	
+{	
 	return StaticInventory;
 }
+
+void AItem::AddToInventory(UInventoryComponent* InventoryComponent)
+{
+	if(!InventoryComponent) return;
+	
+	for (FInventoryClassEntry& PickupClassEntry : StaticInventory)
+	{
+		const int32 ItemsAdded = InventoryComponent->AddItemDefinition(PickupClassEntry.ItemDef, PickupClassEntry.Count);
+		PickupClassEntry.Count -= ItemsAdded;
+	}
+}
+
 // Called when the game starts or when spawned
 void AItem::BeginPlay()
 {
