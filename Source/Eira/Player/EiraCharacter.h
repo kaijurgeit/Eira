@@ -109,7 +109,7 @@ public:
 	TSubclassOf<UUserWidget> QuickInventoryMenuClass;
 	
 	UPROPERTY()
-	TObjectPtr<URadialMenu> QuickInventoryMenu;
+	TObjectPtr<URadialMenu> RadialMenu;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UUserWidget> FullMenuClass;
@@ -135,8 +135,8 @@ private:
 	bool bIsFullMenuOpen = false;
 	
 	virtual void GiveAbilities();
-	void OpenQuickInventoryMenu();
-	void CloseQuickInventoryMenu();
+	void OpenRadialMenu();
+	void CloseRadialMenu();
 	void OpenCloseFullMenu();
 	void OpenFullMenu();
 	void CloseFullMenu();

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Inventory/ItemFragments/InventoryItemFragment_QuickAccess.h"
+#include "Inventory/ItemFragments/InventoryItemFragment_RadialMenu.h"
 
 #include "RadialMenu.generated.h"
 
@@ -29,35 +29,49 @@ protected:
 	virtual void NativeConstruct() override;
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdateSectors(const TArray<FInventoryEntry>& Inventory);
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	
-	UPROPERTY(BlueprintReadOnly, Category = "TheGame|UI", meta = (BindWidget))
-	TObjectPtr<UCanvasPanel> Menu;
-	/** Size Boxes are the Sectors of the Radial Menu */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "TheGame|UI")
-	TArray<TObjectPtr<USizeBox>> SizeBoxSectors;	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "TheGame|UI")
-	TArray<FSectorInfo> SectorInfos;	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "TheGame|UI")
-	TArray<float> SectorAngles = { 45.f, 135.f, 225.f, 270.f, 315.f };
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "TheGame|UI")
-	float FullyCreatedDelay = .05f;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "TheGame|UI")
-	FLinearColor HighlightColor = FLinearColor(1.f, 1.f, 1.f, 1.f);
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "TheGame|UI")
-	FLinearColor NoColor = FLinearColor(1.f, 1.f, 1.f, 0.f);
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "TheGame|UI")
-	FLinearColor DefaultColor = FLinearColor(1.f, 1.f, 1.f, .5f);	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "TheGame|UI")
-	float CountDistToCenter = 250.f;
+	UFUNCTION(BlueprintNativeEvent)
+	void SelectItem();
+	
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
-private:
+protected:	
+	UPROPERTY(BlueprintReadOnly, Category = "Eira|UI", meta = (BindWidget))
+	TObjectPtr<UCanvasPanel> Menu;
+	
+	/**
+	 * Sectors
+	 * - SizeBoxesSectors are the PanelWidgets that make the Sectors of the Radial Menu
+	 * - SectorInfos associate Sectors with EStorageName
+	 * - SectorAngles define the upper boundaries in degree of each Sector
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Eira|UI")
+	TArray<TObjectPtr<USizeBox>> SizeBoxSectors;	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Eira|UI")
+	TArray<FSectorInfo> SectorInfos;	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Eira|UI")
+	TArray<float> SectorAngles = { 45.f, 135.f, 225.f, 270.f, 315.f };
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Eira|UI")
+	float FullyCreatedDelay = .05f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Eira|UI")
+	FLinearColor HighlightColor = FLinearColor(1.f, 1.f, 1.f, 1.f);
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Eira|UI")
+	FLinearColor NoColor = FLinearColor(1.f, 1.f, 1.f, 0.f);
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Eira|UI")
+	FLinearColor DefaultColor = FLinearColor(1.f, 1.f, 1.f, .5f);
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Eira|UI")
+	float CountDistToCenter = 250.f;	
+	
+	UPROPERTY(BlueprintReadWrite, Category = "Eira|Inventory")
+	TObjectPtr<UInventoryItemDefinition> ItemDef;
+
+private:	
 	int LastSectorIndex;
 	FVector2d MenuCenterOnViewport;
-	FTimerHandle TimerHandle;
-	UPROPERTY()
-	TObjectPtr<UInventoryComponent> InventoryComponent;
-	
+	FTimerHandle TimerHandle;	
 
 	void InitializeDesign();
 	void SetMenuCenterOnViewport();	

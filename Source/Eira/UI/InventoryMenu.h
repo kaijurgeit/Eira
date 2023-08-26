@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Interfaces/Pickupable.h"
-#include "Inventory/ItemFragments/InventoryFragment_InventoryEntryLayout.h"
+#include "Inventory/ItemFragments/InventoryFragment_InventoryMenu.h"
 #include "UMG/Public/Blueprint/UserWidget.h"
 #include "InventoryMenu.generated.h"
 
@@ -36,16 +36,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UGridPanel> GridCraft;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UGridPanel> GridProps;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UGridPanel> GridCraft;
-	
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdateInventory(const TArray<FInventoryEntry>& Inventory);
 
-	UGridPanel* SelectGridPanel(const UInventoryFragment_InventoryEntryLayout* Layout);
+	UGridPanel* SelectGridPanel(const UInventoryFragment_InventoryMenu* Layout);
 	UFUNCTION(BlueprintCallable)
 	int CreateInventorySlots(const FInventoryEntry& Entry, int32 ColCount, int32 StartIndex = 0);
 

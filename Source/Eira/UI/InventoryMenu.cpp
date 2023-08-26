@@ -34,7 +34,7 @@ void UInventoryMenu::UpdateInventory_Implementation(const TArray<FInventoryEntry
 }
 
 
-UGridPanel* UInventoryMenu::SelectGridPanel(const UInventoryFragment_InventoryEntryLayout* Layout)
+UGridPanel* UInventoryMenu::SelectGridPanel(const UInventoryFragment_InventoryMenu* Layout)
 {
 	switch (Layout->Group)
 	{
@@ -54,7 +54,7 @@ UGridPanel* UInventoryMenu::SelectGridPanel(const UInventoryFragment_InventoryEn
 int UInventoryMenu::CreateInventorySlots(const FInventoryEntry& Entry, int32 ColCount, int32 StartIndex)
 {
 	int ColIndex = StartIndex;
-	const UInventoryFragment_InventoryEntryLayout* Layout = Entry.ItemDef->FindFragmentByClass<UInventoryFragment_InventoryEntryLayout>();
+	const UInventoryFragment_InventoryMenu* Layout = Entry.ItemDef->FindFragmentByClass<UInventoryFragment_InventoryMenu>();
 	if(!Layout) { return ColIndex; }
 
 	const int32 RestCount = Entry.Count % Layout->MaxItemsPerStack;

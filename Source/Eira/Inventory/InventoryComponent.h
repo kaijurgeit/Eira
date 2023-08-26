@@ -6,7 +6,7 @@
 #include "InventoryItemDefinition.h"
 #include "Components/ActorComponent.h"
 #include "Interfaces/Pickupable.h"
-#include "ItemFragments/InventoryFragment_InventoryEntryLayout.h"
+#include "ItemFragments/InventoryFragment_InventoryMenu.h"
 
 #include "InventoryComponent.generated.h"
 

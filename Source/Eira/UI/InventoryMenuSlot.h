@@ -32,13 +32,13 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UTextLayoutWidget> CountText;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TObjectPtr<UInventoryItemDefinition> ItemDef;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UImage> Icon;
-
+	
+	UPROPERTY(BlueprintReadWrite)
+	TObjectPtr<UInventoryItemDefinition> ItemDef;
+	
 private:	
 	FLinearColor HighlightColor = FLinearColor(1.f, 1.f, 1.f, 1.f);
 };

@@ -25,7 +25,7 @@ void URadialMenu::NativeConstruct()
 	
 	if(const AEiraCharacter* PlayerCharacter = Cast<AEiraCharacter>(GetOwningPlayer()->GetCharacter()))
 	{
-		InventoryComponent = Cast<UInventoryComponent>(PlayerCharacter->GetComponentByClass(UInventoryComponent::StaticClass()));
+		UInventoryComponent* InventoryComponent = Cast<UInventoryComponent>(PlayerCharacter->GetComponentByClass(UInventoryComponent::StaticClass()));
 		if(InventoryComponent)
 		{
 			InventoryComponent->UpdateInventory.AddUniqueDynamic(this, &URadialMenu::UpdateSectors);
@@ -34,6 +34,11 @@ void URadialMenu::NativeConstruct()
 	
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this,
 		&URadialMenu::InitializeDesign, FullyCreatedDelay, false);
+}
+
+void URadialMenu::SelectItem_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 }
 
 void URadialMenu::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

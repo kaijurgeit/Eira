@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "InventoryItemFragment.h"
-#include "InventoryItemFragment_QuickAccess.generated.h"
+#include "InventoryItemFragment_RadialMenu.generated.h"
 
 class UInventoryItemDefinition;
 class USizeBox;
@@ -49,7 +49,7 @@ public:
  * 
  */
 UCLASS()
-class EIRA_API UInventoryItemFragment_QuickAccess : public UInventoryItemFragment
+class EIRA_API UInventoryItemFragment_RadialMenu : public UInventoryItemFragment
 {
 	GENERATED_BODY()
 public:

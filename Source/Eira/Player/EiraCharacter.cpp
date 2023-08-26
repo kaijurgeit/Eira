@@ -160,9 +160,9 @@ void AEiraCharacter::BeginPlay()
 		}
 	}
 
-	QuickInventoryMenu = Cast<URadialMenu>(CreateWidget(PlayerController, QuickInventoryMenuClass));
-	QuickInventoryMenu->AddToViewport();
-	QuickInventoryMenu->RemoveFromParent();
+	RadialMenu = Cast<URadialMenu>(CreateWidget(PlayerController, QuickInventoryMenuClass));
+	RadialMenu->AddToViewport();
+	RadialMenu->RemoveFromParent();
 	
 	FullMenu = Cast<UUserWidget>(CreateWidget(PlayerController, FullMenuClass));
 	FullMenu->AddToViewport();
@@ -195,8 +195,8 @@ void AEiraCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Look, ETriggerEvent::Triggered, this, &AEiraCharacter::Look);
 		
 		// Open/Close Quick Access Inventory
-		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Inventory_Open, ETriggerEvent::Started, this, &AEiraCharacter::OpenQuickInventoryMenu);
-		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Inventory_Close, ETriggerEvent::Completed, this, &AEiraCharacter::CloseQuickInventoryMenu);
+		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_RadialMenu_Open, ETriggerEvent::Started, this, &AEiraCharacter::OpenRadialMenu);
+		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_RadialMenu_Close, ETriggerEvent::Completed, this, &AEiraCharacter::CloseRadialMenu);
 
 		// Open/Close Main Menu
 		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_FullMenu_OpenClose, ETriggerEvent::Started, this, &AEiraCharacter::OpenCloseFullMenu);
@@ -277,9 +277,9 @@ void AEiraCharacter::GiveAbilities()
 	}
 }
 
-void AEiraCharacter::OpenQuickInventoryMenu()
+void AEiraCharacter::OpenRadialMenu()
 {
-	QuickInventoryMenu->AddToViewport();
+	RadialMenu->AddToViewport();
 	PlayerController->SetInputMode(FInputModeGameAndUI().SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways));
 	UGameplayStatics::SetGlobalTimeDilation(this, TimeDilation);
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -288,9 +288,9 @@ void AEiraCharacter::OpenQuickInventoryMenu()
 	}
 }
 
-void AEiraCharacter::CloseQuickInventoryMenu()
+void AEiraCharacter::CloseRadialMenu()
 {
-	QuickInventoryMenu->RemoveFromParent();
+	RadialMenu->RemoveFromParent();
 	PlayerController->SetInputMode(FInputModeGameOnly());
 	constexpr const float NormalTime = 1.0f;
 	UGameplayStatics::SetGlobalTimeDilation(this, NormalTime);

@@ -35,8 +35,8 @@ int32 UInventoryComponent::AddItemDefinition(TSubclassOf<UInventoryItemDefinitio
 	ItemDef->Fragments = GetDefault<UInventoryItemDefinition>(ItemDefClass)->Fragments;	
 	
 	// Get ItemClass Layout and Group
-	const UInventoryFragment_InventoryEntryLayout* Layout = Cast<UInventoryFragment_InventoryEntryLayout>(
-		ItemDef->FindFragmentByClass(UInventoryFragment_InventoryEntryLayout::StaticClass()));	
+	const UInventoryFragment_InventoryMenu* Layout = Cast<UInventoryFragment_InventoryMenu>(
+		ItemDef->FindFragmentByClass(UInventoryFragment_InventoryMenu::StaticClass()));	
 	if(!Layout)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s -> %s"), *FString(__FUNCTION__), *FString("No Entry Layout"));
@@ -69,8 +69,8 @@ int32 UInventoryComponent::AddItemDefinition(TSubclassOf<UInventoryItemDefinitio
 
 int32 UInventoryComponent::RemoveItemDefinition(UInventoryItemDefinition* ItemDef, int32 Count)
 {	
-	const UInventoryFragment_InventoryEntryLayout* Layout = Cast<UInventoryFragment_InventoryEntryLayout>(
-		ItemDef->FindFragmentByClass(UInventoryFragment_InventoryEntryLayout::StaticClass()));
+	const UInventoryFragment_InventoryMenu* Layout = Cast<UInventoryFragment_InventoryMenu>(
+		ItemDef->FindFragmentByClass(UInventoryFragment_InventoryMenu::StaticClass()));
 	if(!Layout)
 	{
 		UE_LOG(LogTemp, Warning, TEXT(	"%s -> %s"), *FString(__FUNCTION__), *FString("No Entry Layout"));
