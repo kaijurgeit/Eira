@@ -156,7 +156,7 @@ int32 UInventoryComponent::RemoveItems(EInventoryGroup Group, int32 MaxItemsPerS
 FInventoryEntry* UInventoryComponent::GetOrCreateEntry(UInventoryItemDefinition* PickupItem, EInventoryGroup Group)
 {
 	FInventoryEntry* InventoryEntry = Entries.FindByPredicate(
-		[PickupItem](const FInventoryEntry& Entry)
+	[PickupItem](const FInventoryEntry& Entry)
 		{
 			return Entry.ItemDef->IsA(PickupItem->GetClass());
 		});
