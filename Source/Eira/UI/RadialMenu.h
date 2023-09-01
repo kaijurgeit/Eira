@@ -28,7 +28,7 @@ public:
 protected:	
 	virtual void NativeConstruct() override;
 	UFUNCTION(BlueprintNativeEvent)
-	void UpdateSectors(const TArray<FInventoryEntry>& Inventory);
+	void UpdateSectors(const TArray<FInventoryEntry>& InventoryEntries);
 	
 	UFUNCTION(BlueprintNativeEvent)
 	void SelectItem();

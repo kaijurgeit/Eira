@@ -48,7 +48,7 @@ void URadialMenu::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 }
 
 
-void URadialMenu::UpdateSectors_Implementation(const TArray<FInventoryEntry>& Inventory)
+void URadialMenu::UpdateSectors_Implementation(const TArray<FInventoryEntry>& InventoryEntries)
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	// const FSectorInfo* SectorInfo = GetSectorInfo(SlotInfo);

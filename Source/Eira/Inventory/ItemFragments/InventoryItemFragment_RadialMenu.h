@@ -12,7 +12,7 @@ class URadialMenuSlot;
 
 
 UENUM(BlueprintType)
-enum class EQuickAccessGroup :uint8
+enum class ERadialMenuGroup :uint8
 {
 	None,
 	Melee1,
@@ -36,7 +36,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = QuickAccessMenu)
 	USizeBox* SizeBox;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = QuickAccessMenu)
-	EQuickAccessGroup StorageName;
+	ERadialMenuGroup StorageName;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = QuickAccessMenu)
 	int Slot;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = QuickAccessMenu)
@@ -54,7 +54,7 @@ class EIRA_API UInventoryItemFragment_RadialMenu : public UInventoryItemFragment
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EQuickAccessGroup Group;
+	ERadialMenuGroup Group;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UTexture2D> IconTexture;
