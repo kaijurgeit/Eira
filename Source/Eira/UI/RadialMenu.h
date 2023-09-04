@@ -24,6 +24,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void DropItemFromInventory();
+
+	UFUNCTION(BlueprintCallable)
+	UInventoryItemDefinition* GetSelectedItemDef();	
 	
 protected:	
 	virtual void NativeConstruct() override;
@@ -32,7 +35,7 @@ protected:
 	
 	UFUNCTION(BlueprintNativeEvent)
 	void SelectItem();
-	
+
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 protected:	
@@ -60,16 +63,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Eira|UI")
 	FLinearColor NoColor = FLinearColor(1.f, 1.f, 1.f, 0.f);
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Eira|UI")
-	FLinearColor DefaultColor = FLinearColor(1.f, 1.f, 1.f, .5f);
-	
+	FLinearColor DefaultColor = FLinearColor(1.f, 1.f, 1.f, .5f);	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Eira|UI")
 	float CountDistToCenter = 250.f;	
-	
-	UPROPERTY(BlueprintReadWrite, Category = "Eira|Inventory")
-	TObjectPtr<UInventoryItemDefinition> ItemDef;
 
 private:	
 	int LastSectorIndex;
+	int SelectedSectorIndex;
 	FVector2d MenuCenterOnViewport;
 	FTimerHandle TimerHandle;	
 

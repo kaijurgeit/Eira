@@ -7,6 +7,8 @@
 #include "Items/Item.h"
 #include "Player/EiraCharacter.h"
 
+PRAGMA_DISABLE_OPTIMIZATION
+
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
 {
@@ -36,7 +38,7 @@ int32 UInventoryComponent::AddItemDefinition(TSubclassOf<UInventoryItemDefinitio
 	
 	// Get ItemClass Layout and Group
 	const UInventoryFragment_InventoryMenu* Layout = Cast<UInventoryFragment_InventoryMenu>(
-		ItemDef->FindFragmentByClass(UInventoryFragment_InventoryMenu::StaticClass()));	
+		ItemDef->FindFragmentByClass(UInventoryFragment_InventoryMenu::StaticClass()));
 	if(!Layout)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s -> %s"), *FString(__FUNCTION__), *FString("No Entry Layout"));
@@ -93,6 +95,8 @@ int32 UInventoryComponent::RemoveItemDefinition(UInventoryItemDefinition* ItemDe
 
 void UInventoryComponent::Select(const UInventoryItemDefinition* ItemDef)
 {
+	if(!ItemDef) { return; }
+	
 	const UInventoryFragment_EquippableItem* Equippable = Cast<UInventoryFragment_EquippableItem>(
 		ItemDef->FindFragmentByClass(UInventoryFragment_EquippableItem::StaticClass()));
 

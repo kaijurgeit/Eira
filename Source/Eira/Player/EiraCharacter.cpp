@@ -290,6 +290,7 @@ void AEiraCharacter::OpenRadialMenu()
 
 void AEiraCharacter::CloseRadialMenu()
 {
+	InventoryComponent->Select(RadialMenu->GetSelectedItemDef());
 	RadialMenu->RemoveFromParent();
 	PlayerController->SetInputMode(FInputModeGameOnly());
 	constexpr const float NormalTime = 1.0f;

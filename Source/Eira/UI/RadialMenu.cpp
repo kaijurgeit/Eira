@@ -41,9 +41,15 @@ void URadialMenu::SelectItem_Implementation()
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 }
 
+UInventoryItemDefinition* URadialMenu::GetSelectedItemDef()
+{
+	return SectorInfos[SelectedSectorIndex].ItemDefinition;
+}
+
 void URadialMenu::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
-	Super::NativeTick(MyGeometry, InDeltaTime);
+	Super::NativeTick(MyGeometry, InDeltaTime);	
+	SelectedSectorIndex = GetIndexByAngle(GetMouseAngle());
 	HighlightSector();	
 }
 
@@ -62,13 +68,13 @@ void URadialMenu::UpdateSectors_Implementation(const TArray<FInventoryEntry>& In
 
 void URadialMenu::SelectItemFromInventory()
 {
-	const FSectorInfo SectorInfo = GetSectorInfoFromMouseAngle();
+	// const FSectorInfo SectorInfo = GetSectorInfoFromMouseAngle();
 	// InventoryComponent->Select(SectorInfo.StorageName, SectorInfo.Slot);
 }
 
 void URadialMenu::DropItemFromInventory()
 {
-	const FSectorInfo SectorInfo = GetSectorInfoFromMouseAngle();
+	// const FSectorInfo SectorInfo = GetSectorInfoFromMouseAngle();
 	// InventoryComponent->Drop(SectorInfo.StorageName, SectorInfo.Slot);
 }
 
@@ -208,13 +214,12 @@ void URadialMenu::SetCountPositionByIndex(int i)
 
 void URadialMenu::HighlightSector()
 {
-	const int SectorIndex = GetIndexByAngle(GetMouseAngle());
-	if(LastSectorIndex != SectorIndex)
+	if(LastSectorIndex != SelectedSectorIndex)
 	{		
 		HighlightByIndex(LastSectorIndex, false);
-		HighlightByIndex(SectorIndex, true);
-		LastSectorIndex = SectorIndex;		
-		UE_LOG(LogTemp, Warning, TEXT("%s -> %i"), *FString(__FUNCTION__), SectorIndex);
+		HighlightByIndex(SelectedSectorIndex, true);
+		LastSectorIndex = SelectedSectorIndex;		
+		UE_LOG(LogTemp, Warning, TEXT("%s -> %i"), *FString(__FUNCTION__), SelectedSectorIndex);
 	}
 }
 

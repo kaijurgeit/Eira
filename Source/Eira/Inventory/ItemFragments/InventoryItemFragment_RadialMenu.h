@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "InventoryItemFragment.h"
+#include "Inventory/InventoryItemDefinition.h"
 #include "InventoryItemFragment_RadialMenu.generated.h"
 
 class UInventoryItemDefinition;
@@ -33,16 +34,14 @@ struct FSectorInfo
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = QuickAccessMenu)
-	USizeBox* SizeBox;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = QuickAccessMenu)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = RadialMenu)
+	TObjectPtr<USizeBox> SizeBox;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = RadialMenu)
 	ERadialMenuGroup StorageName;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = QuickAccessMenu)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = RadialMenu)
 	int Slot;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = QuickAccessMenu)
-	URadialMenuSlot* Sector;	
-	// UPROPERTY(BlueprintReadWrite, Category = QuickAccessMenu)
-	// UInventoryItemDefinition ItemDefinition;	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = RadialMenu)
+	TObjectPtr<URadialMenuSlot> Sector;
 };
 
 /**
