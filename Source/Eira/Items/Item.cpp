@@ -4,8 +4,8 @@
 #include "Item.h"
 
 #include "Components/MaterialBillboardComponent.h"
+#include "Inventory/InventoryComponent.h"
 #include "Inventory/InventoryItemDefinition.h"
-
 
 // Sets default values
 AItem::AItem()
@@ -37,10 +37,34 @@ void AItem::Interact()
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 }
 
-TArray<FInventoryClassEntry>& AItem::GetPickupInventory()
+void AItem::Attach()
+{	
+	IconBillboardComponent->SetHiddenInGame(true);	
+	StaticMeshComponent->SetCollisionProfileName(TEXT("NoCollision"));
+}
+
+void AItem::UnAttach()
 {
+	IconBillboardComponent->SetHiddenInGame(false);	
+	StaticMeshComponent->SetCollisionProfileName(TEXT("Interact"));
+}
+
+TArray<FInventoryClassEntry>& AItem::GetPickupInventory()
+{	
 	return StaticInventory;
 }
+
+void AItem::AddToInventory(UInventoryComponent* InventoryComponent)
+{
+	if(!InventoryComponent) return;
+	
+	for (FInventoryClassEntry& PickupClassEntry : StaticInventory)
+	{
+		const int32 ItemsAdded = InventoryComponent->AddItemDefinition(PickupClassEntry.ItemDef, PickupClassEntry.Count);
+		PickupClassEntry.Count -= ItemsAdded;
+	}
+}
+
 // Called when the game starts or when spawned
 void AItem::BeginPlay()
 {

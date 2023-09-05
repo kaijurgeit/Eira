@@ -62,7 +62,8 @@ class UPickupableStatics : public UBlueprintFunctionLibrary
 public:
 	UFUNCTION(BlueprintPure)
 	static TScriptInterface<IPickupable> GetFirstPickupableFromActor(AActor* Actor);
-	
+
+	//TODO: Do we really want a IPickupable or just an AItem? We have to cast it anyways to AItem, see GA_Pickup to destroy the empty Actor
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, meta = (WorldContext = "Ability"))
 	static void AddPickupToInventory(UInventoryComponent* InventoryComponent, TScriptInterface<IPickupable> Pickup);
 };

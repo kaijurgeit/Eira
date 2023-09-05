@@ -20,8 +20,8 @@ void FEiraGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(InputTag_Look, "InputTag.Look", "Look (mouse) input.");
 	AddTag(InputTag_Jump, "InputTag.Jump", "Jump input");
 	AddTag(InputTag_Fire, "InputTag.Fire", "Fire input.");
-	AddTag(InputTag_Inventory_Open, "InputTag.Inventory.Open", "Inventory open.");
-	AddTag(InputTag_Inventory_Close, "InputTag.Inventory.Close", "Inventory close.");
+	AddTag(InputTag_RadialMenu_Open, "InputTag.RadialMenu.Open", "Open Radial Menu.");
+	AddTag(InputTag_RadialMenu_Close, "InputTag.RadialMenu.Close", "Close Radial Menu.");
 	AddTag(InputTag_FullMenu_OpenClose, "InputTag.FullMenu.OpenClose", "Full menu toggle open/close.");
 
 	// Items

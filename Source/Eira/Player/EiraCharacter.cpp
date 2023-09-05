@@ -18,8 +18,9 @@
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/SphereComponent.h"
 #include "Inventory/InventoryComponent.h"
+#include "Items/Item.h"
 #include "Kismet/GameplayStatics.h"
-#include "UI/InventoryWidget.h"
+#include "UI/RadialMenu.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -122,6 +123,30 @@ UShapeComponent* AEiraCharacter::GetColliderThatHasTag_Implementation(FGameplayT
 	return nullptr;
 }
 
+void AEiraCharacter::Equip(AItem* Item, FName SocketName)
+{
+	AttachToSocket(Item, SocketName);
+}
+
+void AEiraCharacter::AttachToSocket(AItem* Item, FName SocketName)
+{	
+	const FAttachmentTransformRules AttachmentTransformRules(
+		EAttachmentRule::SnapToTarget,
+		EAttachmentRule::SnapToTarget,
+		EAttachmentRule::KeepWorld,
+		false);
+	Item->AttachToComponent(GetMesh(), AttachmentTransformRules, SocketName);
+	UE_LOG(LogTemp, Warning, TEXT("%s, - Actor: %s, - SocketName: %s"),
+		*FString(__FUNCTION__), *Item->GetName(), *SocketName.ToString());
+	Item->Attach();
+	Attachments.Add({SocketName, Item});
+}
+
+void AEiraCharacter::ClearSocket(FName SocketName)
+{
+	Attachments.FindAndRemoveChecked(SocketName)->Destroy();
+}
+
 
 void AEiraCharacter::BeginPlay()
 {
@@ -139,9 +164,9 @@ void AEiraCharacter::BeginPlay()
 		}
 	}
 
-	QuickInventoryMenu = Cast<UInventoryWidget>(CreateWidget(PlayerController, QuickInventoryMenuClass));
-	QuickInventoryMenu->AddToViewport();
-	QuickInventoryMenu->RemoveFromParent();
+	RadialMenu = Cast<URadialMenu>(CreateWidget(PlayerController, QuickInventoryMenuClass));
+	RadialMenu->AddToViewport();
+	RadialMenu->RemoveFromParent();
 	
 	FullMenu = Cast<UUserWidget>(CreateWidget(PlayerController, FullMenuClass));
 	FullMenu->AddToViewport();
@@ -174,8 +199,8 @@ void AEiraCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Look, ETriggerEvent::Triggered, this, &AEiraCharacter::Look);
 		
 		// Open/Close Quick Access Inventory
-		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Inventory_Open, ETriggerEvent::Started, this, &AEiraCharacter::OpenQuickInventoryMenu);
-		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Inventory_Close, ETriggerEvent::Completed, this, &AEiraCharacter::CloseQuickInventoryMenu);
+		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_RadialMenu_Open, ETriggerEvent::Started, this, &AEiraCharacter::OpenRadialMenu);
+		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_RadialMenu_Close, ETriggerEvent::Completed, this, &AEiraCharacter::CloseRadialMenu);
 
 		// Open/Close Main Menu
 		EiraIC->BindNativeAction(InputConfig, GameplayTags.InputTag_FullMenu_OpenClose, ETriggerEvent::Started, this, &AEiraCharacter::OpenCloseFullMenu);
@@ -256,9 +281,9 @@ void AEiraCharacter::GiveAbilities()
 	}
 }
 
-void AEiraCharacter::OpenQuickInventoryMenu()
+void AEiraCharacter::OpenRadialMenu()
 {
-	QuickInventoryMenu->AddToViewport();
+	RadialMenu->AddToViewport();
 	PlayerController->SetInputMode(FInputModeGameAndUI().SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways));
 	UGameplayStatics::SetGlobalTimeDilation(this, TimeDilation);
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -267,9 +292,11 @@ void AEiraCharacter::OpenQuickInventoryMenu()
 	}
 }
 
-void AEiraCharacter::CloseQuickInventoryMenu()
+void AEiraCharacter::CloseRadialMenu()
 {
-	QuickInventoryMenu->RemoveFromParent();
+	UInventoryItemDefinition* ItemDef = RadialMenu->GetSelectedItemDef(); 
+	InventoryComponent->Select(ItemDef);
+	RadialMenu->RemoveFromParent();
 	PlayerController->SetInputMode(FInputModeGameOnly());
 	constexpr const float NormalTime = 1.0f;
 	UGameplayStatics::SetGlobalTimeDilation(this, NormalTime);

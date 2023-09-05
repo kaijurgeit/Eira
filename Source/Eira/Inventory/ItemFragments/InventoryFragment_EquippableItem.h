@@ -8,6 +8,7 @@
 #include "InventoryFragment_EquippableItem.generated.h"
 
 class UEiraGameplayAbility;
+class AItem;
 /**
  * 
  */
@@ -17,15 +18,15 @@ class EIRA_API UInventoryFragment_EquippableItem : public UInventoryItemFragment
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, Category=Equipment)
-	TSubclassOf<AActor> Equipment;
+	UPROPERTY(EditAnywhere, Category=Inventory)
+	TSubclassOf<AItem> ItemClass;
 
-	UPROPERTY(EditAnywhere, Category=Equipment)
+	UPROPERTY(EditAnywhere, Category=Inventory)
 	TArray<TObjectPtr<UEiraGameplayAbility>> AbilitiesToGrant;
 	
-	UPROPERTY(EditAnywhere, Category=Equipment)
+	UPROPERTY(EditAnywhere, Category=Inventory)
 	FName AttachSocket;
 	
-	UPROPERTY(EditAnywhere, Category=Equipment)
+	UPROPERTY(EditAnywhere, Category=Inventory)
 	FTransform AttachTransform;
 };

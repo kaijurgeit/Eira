@@ -22,8 +22,9 @@ class UInputMappingContext;
 class UInputAction;
 class UGameplayAbility;
 class AEiraPlayerController;
-class UInventoryWidget;
+class URadialMenu;
 class UEiraInventoryManagerComponent;
+class AItem;
 
 UCLASS(config=Game)
 class AEiraCharacter : public ACharacter, public IAbilitySystemInterface, public IColliderTagsInterface, public IInteractableSource
@@ -54,11 +55,11 @@ class AEiraCharacter : public ACharacter, public IAbilitySystemInterface, public
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UEiraAbilitySystemComponent> AbilitySystemComponent;
 	
-	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInventoryComponent> InventoryComponent;
-
+	
 	UPROPERTY()
-	const UEiraAttributeSet* Attributes;
+	const UEiraAttributeSet* Attributes;	
 
 public:
 	AEiraCharacter();
@@ -67,6 +68,9 @@ public:
 	virtual void OnRep_PlayerState() override;
 	virtual TArray<UShapeComponent*> GetCollidersThatHaveTags_Implementation(FGameplayTagContainer ColliderTags) override;	
 	virtual UShapeComponent* GetColliderThatHasTag_Implementation(FGameplayTag ColliderTag) override;
+	void Equip(AItem* Item, FName SocketName);
+	void AttachToSocket(AItem* Item, FName SocketName);
+	void ClearSocket(FName SocketName);
 	
 	/** Effect that initializes our default attributes. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "GAS")
@@ -106,7 +110,7 @@ public:
 	TSubclassOf<UUserWidget> QuickInventoryMenuClass;
 	
 	UPROPERTY()
-	TObjectPtr<UInventoryWidget> QuickInventoryMenu;
+	TObjectPtr<URadialMenu> RadialMenu;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UUserWidget> FullMenuClass;
@@ -126,13 +130,14 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<AActor> InteractableTargetActor;
+	
+	TMap<FName, TObjectPtr<AActor>> Attachments;
 
 	bool bIsFullMenuOpen = false;
-
 	
 	virtual void GiveAbilities();
-	void OpenQuickInventoryMenu();
-	void CloseQuickInventoryMenu();
+	void OpenRadialMenu();
+	void CloseRadialMenu();
 	void OpenCloseFullMenu();
 	void OpenFullMenu();
 	void CloseFullMenu();

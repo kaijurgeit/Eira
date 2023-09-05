@@ -23,7 +23,7 @@ public:
 	const UInventoryItemFragment* FindFragmentByClass(TSubclassOf<UInventoryItemFragment> FragmentClass) const;
 
 	template <typename ResultClass>
-	const ResultClass* FindFragmentByClass()
+	const ResultClass* FindFragmentByClass() const
 	{
 		return (ResultClass*)FindFragmentByClass(ResultClass::StaticClass());
 	}

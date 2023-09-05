@@ -37,12 +37,7 @@ void UPickupableStatics::AddPickupToInventory(UInventoryComponent* InventoryComp
 		// TArray<FInventoryEntry> PickupInventoryEntries = Pickup->GetPickupInventory();
 		for (FInventoryClassEntry& PickupClassEntry : PickupInventoryClassEntries)
 		{
-			FInventoryEntry PickupEntry;
-			PickupEntry.ItemDef = NewObject<UInventoryItemDefinition>(PickupClassEntry.ItemDef);
-			PickupEntry.ItemDef->Fragments = GetDefault<UInventoryItemDefinition>(PickupClassEntry.ItemDef)->Fragments;
-			PickupEntry.Count =  PickupClassEntry.Count;
-			
-			int32 ItemsAdded = InventoryComponent->AddItemDefinition(PickupEntry);
+			const int32 ItemsAdded = InventoryComponent->AddItemDefinition(PickupClassEntry.ItemDef, PickupClassEntry.Count);
 			PickupClassEntry.Count -= ItemsAdded;
 		}
 	}

@@ -3,12 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InventoryItemDefinition.h"
 #include "Components/ActorComponent.h"
 #include "Interfaces/Pickupable.h"
-#include "ItemFragments/InventoryFragment_InventoryEntryLayout.h"
+#include "ItemFragments/InventoryFragment_InventoryMenu.h"
 
 #include "InventoryComponent.generated.h"
 
+class AEiraCharacter;
 class UInventoryItemDefinition;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateInventory, const TArray<FInventoryEntry>&, InventoryEntry);
@@ -30,19 +32,24 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
-	// FInventoryEntry& GetExistingEntry(FInventoryEntry PickupEntry);
+	UFUNCTION(BlueprintCallable)
+	int32 AddItemDefinition(TSubclassOf<UInventoryItemDefinition> ItemDefClass, int32 Count);
 
 	UFUNCTION(BlueprintCallable)
-	int32 AddItemDefinition(const FInventoryEntry& PickupEntry);
-	
+	int32 RemoveItemDefinition(UInventoryItemDefinition* ItemDef, int32 Count);
+
 	UFUNCTION(BlueprintCallable)
-	int32 RemoveItemDefinition(const FInventoryEntry& DropEntry);
-	
+	void Select(const UInventoryItemDefinition* ItemDef);
+
+	// If 0, there are infinite Stacks e.g. Quests
 	UPROPERTY(EditDefaultsOnly)
-	TMap<EInventoryGroup, int32> MaxStacksPerGroup = {{ EInventoryGroup::Resources, 3 }};
+	TMap<EInventoryGroup, int32> MaxStacksPerGroup = {
+		{ EInventoryGroup::Quests, 0 },
+		{ EInventoryGroup::Weapons, 4 },
+		{ EInventoryGroup::Props, 5 },
+		{ EInventoryGroup::Resources, 3 },
+		{ EInventoryGroup::Craft, 6 }
+	};
 
 private:
 	UPROPERTY()
@@ -50,7 +57,15 @@ private:
 	
 	UPROPERTY()
 	TMap<EInventoryGroup, int32> FreeStacksPerGroup;
-	
+
+	UPROPERTY()
+	TObjectPtr<AEiraCharacter> EiraCharacterOwner;
+		
+	AEiraCharacter* GetEiraCharacterOwner();
+	void UpdateFreeStacks(EInventoryGroup Group, int32 MaxItemsPerStack, int32 OldCount, int32 NewCount);
+
 	int32 AddItems(FInventoryEntry* Entry, EInventoryGroup Group, int32 MaxItemsPerStack, int32 MaxItemsTotal, int32 PickupItemCount);
+	int32 RemoveItems(EInventoryGroup Group, int32 MaxItemsPerStack, int32 Count, const int Index);
 	FInventoryEntry* GetOrCreateEntry(UInventoryItemDefinition* PickupItem, EInventoryGroup Group);
+	bool TryAttachItem(UInventoryItemDefinition* ItemDef);
 };
