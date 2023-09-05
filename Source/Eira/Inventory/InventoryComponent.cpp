@@ -1,9 +1,13 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "InventoryComponent.h"
+
+#include "AbilitySystemComponent.h"
+#include "GameplayEffectTypes.h"
 #include "InventoryItemDefinition.h"
 #include "ItemFragments/InventoryFragment_AttachableItem.h"
 #include "ItemFragments/InventoryFragment_EquippableItem.h"
+#include "ItemFragments/UInventoryItemFragment_SetAttribute.h"
 #include "Items/Item.h"
 #include "Player/EiraCharacter.h"
 
@@ -56,6 +60,18 @@ int32 UInventoryComponent::AddItemDefinition(TSubclassOf<UInventoryItemDefinitio
 	if(ItemsAdded == 0)
 	{
 		return 0;
+	}
+
+	if(const auto* SetAttributeFragment = ItemDef->FindFragmentByClass<UUInventoryItemFragment_SetAttribute>())
+	{
+		UAbilitySystemComponent* ASC = GetEiraCharacterOwner()->GetAbilitySystemComponent();
+		TSubclassOf<UGameplayEffect> Foo;
+		FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(Foo, 1, FGameplayEffectContextHandle());
+		SpecHandle.
+		for (auto Attribute : SetAttributeFragment->Attributes)
+		{
+			Attribute.Key
+		}
 	}
 	
 	TryAttachItem(ItemDef);
