@@ -21,7 +21,7 @@ public:
 	TSubclassOf<AItem> ItemClass;
 	
 	UPROPERTY(EditAnywhere, Category=Inventory)
-	FName AttachSocket;
+	FName SocketName;
 	
 	UPROPERTY(EditAnywhere, Category=Inventory)
 	FTransform AttachTransform;

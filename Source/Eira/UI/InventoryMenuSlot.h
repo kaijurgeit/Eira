@@ -38,6 +38,9 @@ public:
 	
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UInventoryItemDefinition> ItemDef;
+
+	UPROPERTY(EditDefaultsOnly)
+	int Foo;
 	
 private:	
 	FLinearColor HighlightColor = FLinearColor(1.f, 1.f, 1.f, 1.f);

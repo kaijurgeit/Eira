@@ -139,8 +139,12 @@ void AEiraCharacter::AttachToSocket(AItem* Item, FName SocketName)
 	UE_LOG(LogTemp, Warning, TEXT("%s, - Actor: %s, - SocketName: %s"),
 		*FString(__FUNCTION__), *Item->GetName(), *SocketName.ToString());
 	Item->Attach();
-	
-	Attachments.Add(Item);
+	Attachments.Add({SocketName, Item});
+}
+
+void AEiraCharacter::ClearSocket(FName SocketName)
+{
+	Attachments.FindAndRemoveChecked(SocketName)->Destroy();
 }
 
 
@@ -290,7 +294,8 @@ void AEiraCharacter::OpenRadialMenu()
 
 void AEiraCharacter::CloseRadialMenu()
 {
-	InventoryComponent->Select(RadialMenu->GetSelectedItemDef());
+	UInventoryItemDefinition* ItemDef = RadialMenu->GetSelectedItemDef(); 
+	InventoryComponent->Select(ItemDef);
 	RadialMenu->RemoveFromParent();
 	PlayerController->SetInputMode(FInputModeGameOnly());
 	constexpr const float NormalTime = 1.0f;

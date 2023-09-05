@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Inventory/ItemFragments/InventoryItemFragment_RadialMenu.h"
 #include "RadialMenuSlot.generated.h"
 
 class UTextLayoutWidget;
@@ -21,6 +22,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateIcon(int ItemCount, UTexture2D* IconTexture);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	ERadialMenuGroup Group;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TObjectPtr<UInventoryItemDefinition> ItemDef;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UImage> Icon;

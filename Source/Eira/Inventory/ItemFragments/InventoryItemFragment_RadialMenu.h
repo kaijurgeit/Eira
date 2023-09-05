@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "InventoryItemFragment.h"
-#include "Inventory/InventoryItemDefinition.h"
 #include "InventoryItemFragment_RadialMenu.generated.h"
 
 class UInventoryItemDefinition;
@@ -26,23 +25,6 @@ enum class ERadialMenuGroup :uint8
 	Backpack
 };
 
-/**
- * 
- */
-USTRUCT(BlueprintType)
-struct FSectorInfo
-{
-	GENERATED_BODY()
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = RadialMenu)
-	TObjectPtr<USizeBox> SizeBox;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = RadialMenu)
-	ERadialMenuGroup StorageName;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = RadialMenu)
-	int Slot;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = RadialMenu)
-	TObjectPtr<URadialMenuSlot> Sector;
-};
 
 /**
  * 

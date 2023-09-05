@@ -43,7 +43,7 @@ void URadialMenu::SelectItem_Implementation()
 
 UInventoryItemDefinition* URadialMenu::GetSelectedItemDef()
 {
-	return SectorInfos[SelectedSectorIndex].ItemDefinition;
+	return Slots[SelectedSectorIndex]->ItemDef;
 }
 
 void URadialMenu::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -57,25 +57,14 @@ void URadialMenu::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 void URadialMenu::UpdateSectors_Implementation(const TArray<FInventoryEntry>& InventoryEntries)
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
-	// const FSectorInfo* SectorInfo = GetSectorInfo(SlotInfo);
-	// if(!SectorInfo)
-	// {
-	// 	return;
-	// }
-	// UpdateIcon(SlotInfo, *SectorInfo);
-	// UpdateCount(SlotInfo, *SectorInfo);
 }
 
 void URadialMenu::SelectItemFromInventory()
 {
-	// const FSectorInfo SectorInfo = GetSectorInfoFromMouseAngle();
-	// InventoryComponent->Select(SectorInfo.StorageName, SectorInfo.Slot);
 }
 
 void URadialMenu::DropItemFromInventory()
 {
-	// const FSectorInfo SectorInfo = GetSectorInfoFromMouseAngle();
-	// InventoryComponent->Drop(SectorInfo.StorageName, SectorInfo.Slot);
 }
 
 void URadialMenu::InitializeDesign()
@@ -85,7 +74,6 @@ void URadialMenu::InitializeDesign()
 	for (int i = 0; i < SectorAngles.Num(); ++i)
 	{
 		SetCountPositionByIndex(i);
-		SectorInfos[i].Sector = GetInventorySlot(i);
 	}
 }
 
@@ -137,7 +125,7 @@ int URadialMenu::GetIndexByAngle(const float MouseAngle)  const
 
 void URadialMenu::GetChildImages(int SectorIndex, UImage*& BackgroundImage, UImage*& IconImage)
 {
-	const UOverlay* SizeBoxOverlay = Cast<UOverlay>(SectorInfos[SectorIndex].SizeBox->GetChildAt(0));
+	const UOverlay* SizeBoxOverlay = Cast<UOverlay>(SizeBoxSectors[SectorIndex]->GetChildAt(0));
 	if(!SizeBoxOverlay)
 	{
 		return;
@@ -147,23 +135,13 @@ void URadialMenu::GetChildImages(int SectorIndex, UImage*& BackgroundImage, UIma
 	IconImage = Cast<UImage>(OverlaySizeBox->GetChildAt(0));
 	if(!IconImage)
 	{
-		if(const URadialMenuSlot* InventorySlot = GetInventorySlot(SectorIndex))
+		if(const URadialMenuSlot* InventorySlot = Slots[SectorIndex])
 		{
 			IconImage = InventorySlot->Icon;
 		}
 	}		
 }
 
-URadialMenuSlot* URadialMenu::GetInventorySlot(const int SectorIndex)
-{
-	const UOverlay* SizeBoxOverlay = Cast<UOverlay>(SectorInfos[SectorIndex].SizeBox->GetChildAt(0));
-	if(!SizeBoxOverlay)
-	{
-		return nullptr;
-	}
-	const USizeBox* OverlaySizeBox = Cast<USizeBox>(SizeBoxOverlay->GetChildAt(1));
-	return Cast<URadialMenuSlot>(OverlaySizeBox->GetChildAt(0));
-}
 
 void URadialMenu::Highlight(UImage* Image, bool IsHovered) const
 {
@@ -202,13 +180,10 @@ void URadialMenu::SetCountPositionByIndex(int i)
 	FVector2d CountPosition =  FVector2d(X, Y);
 	CountPosition.Normalize();
 	CountPosition = CountDistToCenter * CountPosition;
-	if(const URadialMenuSlot* QuickAccessSlot = GetInventorySlot(i))
+	UCanvasPanelSlot* Count = UWidgetLayoutLibrary::SlotAsCanvasSlot(Slots[i]->CountText);
+	if(Count)
 	{
-		UCanvasPanelSlot* Count = UWidgetLayoutLibrary::SlotAsCanvasSlot(QuickAccessSlot->CountText);
-		if(Count)
-		{
-			Count->SetPosition(CountPosition);
-		}
+		Count->SetPosition(CountPosition);
 	}
 }
 
@@ -221,9 +196,4 @@ void URadialMenu::HighlightSector()
 		LastSectorIndex = SelectedSectorIndex;		
 		UE_LOG(LogTemp, Warning, TEXT("%s -> %i"), *FString(__FUNCTION__), SelectedSectorIndex);
 	}
-}
-
-FSectorInfo URadialMenu::GetSectorInfoFromMouseAngle() const
-{
-	return SectorInfos[GetIndexByAngle(GetMouseAngle())];
 }

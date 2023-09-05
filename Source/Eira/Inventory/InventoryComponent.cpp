@@ -7,8 +7,6 @@
 #include "Items/Item.h"
 #include "Player/EiraCharacter.h"
 
-PRAGMA_DISABLE_OPTIMIZATION
-
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
 {
@@ -100,10 +98,20 @@ void UInventoryComponent::Select(const UInventoryItemDefinition* ItemDef)
 	const UInventoryFragment_EquippableItem* Equippable = Cast<UInventoryFragment_EquippableItem>(
 		ItemDef->FindFragmentByClass(UInventoryFragment_EquippableItem::StaticClass()));
 
-	if(Equippable)
-	{
+	if(!Equippable) { return; }
+
+	if(Equippable->ItemClass)
+	{		
 		AItem* Item = GetWorld()->SpawnActor<AItem>(Equippable->ItemClass, FTransform());
-		GetEiraCharacterOwner()->Equip(Item, Equippable->AttachSocket);
+		GetEiraCharacterOwner()->Equip(Item, Equippable->AttachSocket);		
+	}
+
+	const UInventoryFragment_AttachableItem* Attachable = Cast<UInventoryFragment_AttachableItem>(
+		ItemDef->FindFragmentByClass(UInventoryFragment_AttachableItem::StaticClass()));
+
+	if(Attachable)
+	{
+		GetEiraCharacterOwner()->ClearSocket(Attachable->SocketName);
 	}
 }
 
@@ -188,7 +196,7 @@ bool UInventoryComponent::TryAttachItem(UInventoryItemDefinition* ItemDef)
 	if(Attachable)
 	{
 		AItem* Item = GetWorld()->SpawnActor<AItem>(Attachable->ItemClass, FTransform());
-		GetEiraCharacterOwner()->AttachToSocket(Item, Attachable->AttachSocket);
+		GetEiraCharacterOwner()->AttachToSocket(Item, Attachable->SocketName);
 		return true;
 	}
 	return false;

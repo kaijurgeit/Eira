@@ -55,7 +55,7 @@ class AEiraCharacter : public ACharacter, public IAbilitySystemInterface, public
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UEiraAbilitySystemComponent> AbilitySystemComponent;
 	
-	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInventoryComponent> InventoryComponent;
 	
 	UPROPERTY()
@@ -70,6 +70,7 @@ public:
 	virtual UShapeComponent* GetColliderThatHasTag_Implementation(FGameplayTag ColliderTag) override;
 	void Equip(AItem* Item, FName SocketName);
 	void AttachToSocket(AItem* Item, FName SocketName);
+	void ClearSocket(FName SocketName);
 	
 	/** Effect that initializes our default attributes. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "GAS")
@@ -130,7 +131,7 @@ private:
 	UPROPERTY()
 	TObjectPtr<AActor> InteractableTargetActor;
 	
-	TArray<TObjectPtr<AActor>> Attachments;
+	TMap<FName, TObjectPtr<AActor>> Attachments;
 
 	bool bIsFullMenuOpen = false;
 	

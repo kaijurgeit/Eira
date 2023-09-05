@@ -49,9 +49,9 @@ protected:
 	 * - SectorAngles define the upper boundaries in degree of each Sector
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Eira|UI")
-	TArray<TObjectPtr<USizeBox>> SizeBoxSectors;	
+	TArray<TObjectPtr<USizeBox>> SizeBoxSectors;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Eira|UI")
-	TArray<FSectorInfo> SectorInfos;	
+	TArray<TObjectPtr<URadialMenuSlot>> Slots;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Eira|UI")
 	TArray<float> SectorAngles = { 45.f, 135.f, 225.f, 270.f, 315.f };
 	
@@ -79,10 +79,7 @@ private:
 	float GetMouseAngle() const;
 	int GetIndexByAngle(float MouseAngle) const;
 	void GetChildImages(int SectorIndex, UImage*& BackgroundImage, UImage*& IconImage);
-	URadialMenuSlot* GetInventorySlot(int SectorIndex);
 	void Highlight(UImage* Image, bool IsHovered) const;
 	void HighlightByIndex(float SectorIndex, bool IsHovered);
 	void SetCountPositionByIndex(int i);
-	// FSectorInfo* GetSectorInfo(FStorageInfo SlotInfo);
-	FSectorInfo GetSectorInfoFromMouseAngle() const;
 };
