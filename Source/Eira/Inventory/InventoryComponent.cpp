@@ -35,8 +35,7 @@ int32 UInventoryComponent::AddItemDefinition(TSubclassOf<UInventoryItemDefinitio
 	ItemDef->Fragments = GetDefault<UInventoryItemDefinition>(ItemDefClass)->Fragments;	
 	
 	// Get ItemClass Layout and Group
-	const UInventoryFragment_InventoryMenu* Layout = Cast<UInventoryFragment_InventoryMenu>(
-		ItemDef->FindFragmentByClass(UInventoryFragment_InventoryMenu::StaticClass()));
+	const auto* Layout = ItemDef->FindFragmentByClass<UInventoryFragment_InventoryMenu>();
 	if(!Layout)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s -> %s"), *FString(__FUNCTION__), *FString("No Entry Layout"));
@@ -69,8 +68,7 @@ int32 UInventoryComponent::AddItemDefinition(TSubclassOf<UInventoryItemDefinitio
 
 int32 UInventoryComponent::RemoveItemDefinition(UInventoryItemDefinition* ItemDef, int32 Count)
 {	
-	const UInventoryFragment_InventoryMenu* Layout = Cast<UInventoryFragment_InventoryMenu>(
-		ItemDef->FindFragmentByClass(UInventoryFragment_InventoryMenu::StaticClass()));
+	const auto* Layout = ItemDef->FindFragmentByClass<UInventoryFragment_InventoryMenu>();
 	if(!Layout)
 	{
 		UE_LOG(LogTemp, Warning, TEXT(	"%s -> %s"), *FString(__FUNCTION__), *FString("No Entry Layout"));
@@ -95,8 +93,7 @@ void UInventoryComponent::Select(const UInventoryItemDefinition* ItemDef)
 {
 	if(!ItemDef) { return; }
 	
-	const UInventoryFragment_EquippableItem* Equippable = Cast<UInventoryFragment_EquippableItem>(
-		ItemDef->FindFragmentByClass(UInventoryFragment_EquippableItem::StaticClass()));
+	const auto* Equippable = ItemDef->FindFragmentByClass<UInventoryFragment_EquippableItem>();
 
 	if(!Equippable) { return; }
 
@@ -106,8 +103,7 @@ void UInventoryComponent::Select(const UInventoryItemDefinition* ItemDef)
 		GetEiraCharacterOwner()->Equip(Item, Equippable->AttachSocket);		
 	}
 
-	const UInventoryFragment_AttachableItem* Attachable = Cast<UInventoryFragment_AttachableItem>(
-		ItemDef->FindFragmentByClass(UInventoryFragment_AttachableItem::StaticClass()));
+	const auto* Attachable = ItemDef->FindFragmentByClass<UInventoryFragment_AttachableItem>();
 
 	if(Attachable)
 	{
@@ -191,9 +187,7 @@ FInventoryEntry* UInventoryComponent::GetOrCreateEntry(UInventoryItemDefinition*
 
 bool UInventoryComponent::TryAttachItem(UInventoryItemDefinition* ItemDef)
 {
-	const UInventoryFragment_AttachableItem* Attachable = Cast<UInventoryFragment_AttachableItem>(
-		ItemDef->FindFragmentByClass(UInventoryFragment_AttachableItem::StaticClass()));	
-	if(Attachable)
+	if(const auto* Attachable = ItemDef->FindFragmentByClass<UInventoryFragment_AttachableItem>())
 	{
 		AItem* Item = GetWorld()->SpawnActor<AItem>(Attachable->ItemClass, FTransform());
 		GetEiraCharacterOwner()->AttachToSocket(Item, Attachable->SocketName);
