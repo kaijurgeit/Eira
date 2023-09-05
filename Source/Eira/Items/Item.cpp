@@ -58,10 +58,10 @@ void AItem::AddToInventory(UInventoryComponent* InventoryComponent)
 {
 	if(!InventoryComponent) return;
 	
-	for (FInventoryClassEntry& PickupClassEntry : StaticInventory)
+	for (FInventoryClassEntry& ItemClassEntry : StaticInventory)
 	{
-		const int32 ItemsAdded = InventoryComponent->AddItemDefinition(PickupClassEntry.ItemDef, PickupClassEntry.Count);
-		PickupClassEntry.Count -= ItemsAdded;
+		const int32 ItemsAdded = InventoryComponent->AddItemDefinition(ItemClassEntry.ItemDef, ItemClassEntry.Count);
+		ItemClassEntry.Count -= ItemsAdded;
 	}
 }
 

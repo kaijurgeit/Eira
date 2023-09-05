@@ -14,6 +14,7 @@
 class UInventoryComponent;
 class USphereComponent;
 class UEiraAttributeSet;
+class UResourcesAttributeSet;
 class UEiraAbilitySystemComponent;
 class UEiraInputConfig;
 class USpringArmComponent;
@@ -59,7 +60,10 @@ class AEiraCharacter : public ACharacter, public IAbilitySystemInterface, public
 	TObjectPtr<UInventoryComponent> InventoryComponent;
 	
 	UPROPERTY()
-	const UEiraAttributeSet* Attributes;	
+	const UEiraAttributeSet* Attributes;
+
+	UPROPERTY()
+	const UResourcesAttributeSet* Resources;
 
 public:
 	AEiraCharacter();

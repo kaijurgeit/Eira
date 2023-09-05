@@ -32,7 +32,7 @@ int32 UInventoryComponent::AddItemDefinition(TSubclassOf<UInventoryItemDefinitio
 {
 	// Create Instance from TSubclassOf<UInventoryItemDefinition> with Subclass as type
 	UInventoryItemDefinition* ItemDef = NewObject<UInventoryItemDefinition>(this, ItemDefClass, NAME_None, RF_NoFlags, ItemDefClass->GetDefaultObject(), true);
-	ItemDef->Fragments = GetDefault<UInventoryItemDefinition>(ItemDefClass)->Fragments;	
+	ItemDef->Fragments = GetDefault<UInventoryItemDefinition>(ItemDefClass)->Fragments;
 	
 	// Get ItemClass Layout and Group
 	const auto* Layout = ItemDef->FindFragmentByClass<UInventoryFragment_InventoryMenu>();
