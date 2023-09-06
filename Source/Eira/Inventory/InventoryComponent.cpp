@@ -7,6 +7,7 @@
 #include "InventoryItemDefinition.h"
 #include "ItemFragments/InventoryFragment_AttachableItem.h"
 #include "ItemFragments/InventoryFragment_EquippableItem.h"
+#include "ItemFragments/InventoryFragment_GrantGameplayAbility.h"
 #include "ItemFragments/InventoryItemFragment_SetGameplayAttributes.h"
 #include "Items/Item.h"
 #include "Player/EiraCharacter.h"
@@ -64,9 +65,9 @@ int32 UInventoryComponent::AddItemDefinition(TSubclassOf<UInventoryItemDefinitio
 		return 0;
 	}
 
-	TrySetGameplayAttributes(ItemDef, ItemsAdded);
-	
+	TrySetGameplayAttributes(ItemDef, ItemsAdded);	
 	TryAttachItem(ItemDef);
+	TryGrantAbilites(ItemDef);
 	
 	UpdateInventory.Broadcast(Entries);
 	
@@ -172,6 +173,16 @@ bool UInventoryComponent::TryEquip(const UInventoryItemDefinition* ItemDef)
 	
 	GetEiraCharacterOwner()->ClearSocket(Attachable->SocketName);
 	
+	return true;
+}
+
+bool UInventoryComponent::TryGrantAbilites(const UInventoryItemDefinition* ItemDef)
+{
+	const auto* GrantGameplayAbility = ItemDef->FindFragmentByClass<UInventoryFragment_GrantGameplayAbility>();
+	if(!GrantGameplayAbility) { return false; }
+
+	FGameplayAbilitySpec AbilitySpec(GrantGameplayAbility->GameplayAbilityClass, 1);
+	GetEiraCharacterOwner()->GetAbilitySystemComponent()->GiveAbility(AbilitySpec);
 	return true;
 }
 

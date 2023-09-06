@@ -17,7 +17,7 @@ class EIRA_API UInventoryItemDefinition : public UObject
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Inventory)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Inventory, Instanced)
 	TArray<TObjectPtr<UInventoryItemFragment>> Fragments = TArray<TObjectPtr<UInventoryItemFragment>>();
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Inventory)

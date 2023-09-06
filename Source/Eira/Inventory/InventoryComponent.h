@@ -67,6 +67,7 @@ private:
 	
 	bool TryAttachItem(UInventoryItemDefinition* ItemDef);
 	bool TryEquip(const UInventoryItemDefinition* ItemDef);
+	bool TryGrantAbilites(const UInventoryItemDefinition* ItemDef);
 	bool TrySetGameplayAttributes(UInventoryItemDefinition* ItemDef, int32 ItemCount);
 	
 	void UpdateFreeStacks(EInventoryGroup Group, int32 MaxItemsPerStack, int32 OldCount, int32 NewCount);
