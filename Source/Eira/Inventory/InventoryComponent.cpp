@@ -7,7 +7,7 @@
 #include "InventoryItemDefinition.h"
 #include "ItemFragments/InventoryFragment_AttachableItem.h"
 #include "ItemFragments/InventoryFragment_EquippableItem.h"
-#include "ItemFragments/UInventoryItemFragment_SetAttribute.h"
+#include "ItemFragments/InventoryItemFragment_SetGameplayAttributes.h"
 #include "Items/Item.h"
 #include "Player/EiraCharacter.h"
 
@@ -30,6 +30,32 @@ void UInventoryComponent::BeginPlay()
 
 	// ...
 	FreeStacksPerGroup = TMap<EInventoryGroup, int32>(MaxStacksPerGroup);
+}
+
+void UInventoryComponent::TrySetGameplayAttributes(UInventoryItemDefinition* ItemDef, const int32 ItemCount)
+{
+	if(const auto* SetAttributeFragment = ItemDef->FindFragmentByClass<UInventoryItemFragment_SetGameplayAttributes>())
+	{
+		check(GESetAnyAttributeByCaller);
+		UAbilitySystemComponent* ASC = GetEiraCharacterOwner()->GetAbilitySystemComponent();
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+		const FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(GESetAnyAttributeByCaller, 1, EffectContextHandle);
+		
+		FGameplayEffectSpec* Spec = SpecHandle.Data.Get();
+
+		if(SetAttributeFragment->Attribute.IsValid())
+		{
+			Spec->SetSetByCallerMagnitude(SetAttributeFragment->Attribute, ItemCount);
+		}
+
+		for (auto Attribute : SetAttributeFragment->AttributeMap)
+		{		
+			Spec->SetSetByCallerMagnitude(Attribute.Key, Attribute.Value);
+		}
+		
+		ASC->ApplyGameplayEffectSpecToSelf(*Spec);
+	}
 }
 
 int32 UInventoryComponent::AddItemDefinition(TSubclassOf<UInventoryItemDefinition> ItemDefClass, int32 Count)
@@ -62,17 +88,7 @@ int32 UInventoryComponent::AddItemDefinition(TSubclassOf<UInventoryItemDefinitio
 		return 0;
 	}
 
-	if(const auto* SetAttributeFragment = ItemDef->FindFragmentByClass<UUInventoryItemFragment_SetAttribute>())
-	{
-		UAbilitySystemComponent* ASC = GetEiraCharacterOwner()->GetAbilitySystemComponent();
-		TSubclassOf<UGameplayEffect> Foo;
-		FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(Foo, 1, FGameplayEffectContextHandle());
-		SpecHandle.
-		for (auto Attribute : SetAttributeFragment->Attributes)
-		{
-			Attribute.Key
-		}
-	}
+	TrySetGameplayAttributes(ItemDef, ItemsAdded);
 	
 	TryAttachItem(ItemDef);
 	
@@ -99,6 +115,8 @@ int32 UInventoryComponent::RemoveItemDefinition(UInventoryItemDefinition* ItemDe
 	if(Index == INDEX_NONE) { return 0; }
 
 	const int32 ItemsRemoved = RemoveItems(Layout->Group, Layout->MaxItemsPerStack, Count, Index);
+
+	TrySetGameplayAttributes(ItemDef, -ItemsRemoved);
 	
 	UpdateInventory.Broadcast(Entries);
 

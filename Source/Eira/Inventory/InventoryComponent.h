@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayEffect.h"
 #include "InventoryItemDefinition.h"
 #include "Components/ActorComponent.h"
 #include "Interfaces/Pickupable.h"
@@ -27,9 +28,13 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FUpdateInventory UpdateInventory;
 
+	UPROPERTY(EditDefaultsOnly, Category="Resources")
+	TSubclassOf<UGameplayEffect> GESetAnyAttributeByCaller;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	void TrySetGameplayAttributes(UInventoryItemDefinition* ItemDef, int32 ItemCount);
 
 public:
 	UFUNCTION(BlueprintCallable)
