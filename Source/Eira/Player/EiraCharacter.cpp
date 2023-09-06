@@ -13,9 +13,9 @@
 #include "Eira/Game/EiraGameplayTags.h"
 #include "Eira/Game/EiraInputComponent.h"
 #include "AbilitySystem/EiraAttributeSet.h"
+#include "AbilitySystem/ResourcesAttributeSet.h"
 #include "AbilitySystem/EiraAbilitySystemComponent.h"
 #include "Blueprint/UserWidget.h"
-#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/SphereComponent.h"
 #include "Inventory/InventoryComponent.h"
 #include "Items/Item.h"
@@ -125,7 +125,16 @@ UShapeComponent* AEiraCharacter::GetColliderThatHasTag_Implementation(FGameplayT
 
 void AEiraCharacter::Equip(AItem* Item, FName SocketName)
 {
+	Unequip();
+	EquippedItem = Item;
 	AttachToSocket(Item, SocketName);
+}
+
+void AEiraCharacter::Unequip()
+{
+	if(!EquippedItem) { return; }
+	InventoryComponent->Deselect(EquippedItem->StaticInventory[0].ItemDef);
+	EquippedItem->Destroy();	
 }
 
 void AEiraCharacter::AttachToSocket(AItem* Item, FName SocketName)
@@ -153,7 +162,8 @@ void AEiraCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
-	Attributes = AbilitySystemComponent->GetSet<UEiraAttributeSet>();
+	Attributes = AbilitySystemComponent->AddSet<UEiraAttributeSet>();
+	Resources = AbilitySystemComponent->AddSet<UResourcesAttributeSet>();
 
 	//Add Input Mapping Context
 	if (PlayerController = Cast<AEiraPlayerController>(Controller))

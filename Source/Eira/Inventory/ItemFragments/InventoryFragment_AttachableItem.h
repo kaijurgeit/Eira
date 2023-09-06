@@ -17,8 +17,6 @@ class EIRA_API UInventoryFragment_AttachableItem : public UInventoryItemFragment
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditAnywhere, Category=Inventory)
-	TSubclassOf<AItem> ItemClass;
 	
 	UPROPERTY(EditAnywhere, Category=Inventory)
 	FName SocketName;

@@ -6,6 +6,7 @@
 #include "UObject/Object.h"
 #include "InventoryItemFragment.generated.h"
 
+
 /**
  * 
  */

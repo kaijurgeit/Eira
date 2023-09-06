@@ -1,9 +1,14 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "InventoryComponent.h"
+
+#include "AbilitySystemComponent.h"
+#include "GameplayEffectTypes.h"
 #include "InventoryItemDefinition.h"
 #include "ItemFragments/InventoryFragment_AttachableItem.h"
 #include "ItemFragments/InventoryFragment_EquippableItem.h"
+#include "ItemFragments/InventoryFragment_GrantGameplayAbility.h"
+#include "ItemFragments/InventoryItemFragment_SetGameplayAttributes.h"
 #include "Items/Item.h"
 #include "Player/EiraCharacter.h"
 
@@ -28,11 +33,13 @@ void UInventoryComponent::BeginPlay()
 	FreeStacksPerGroup = TMap<EInventoryGroup, int32>(MaxStacksPerGroup);
 }
 
+
 int32 UInventoryComponent::AddItemDefinition(TSubclassOf<UInventoryItemDefinition> ItemDefClass, int32 Count)
 {
 	// Create Instance from TSubclassOf<UInventoryItemDefinition> with Subclass as type
 	UInventoryItemDefinition* ItemDef = NewObject<UInventoryItemDefinition>(this, ItemDefClass, NAME_None, RF_NoFlags, ItemDefClass->GetDefaultObject(), true);
-	ItemDef->Fragments = GetDefault<UInventoryItemDefinition>(ItemDefClass)->Fragments;	
+	ItemDef->Fragments = GetDefault<UInventoryItemDefinition>(ItemDefClass)->Fragments;
+	UE_LOG(LogTemp, Warning, TEXT("ItemDef -> %s"), *ItemDef->ItemClass->GetName());
 	
 	// Get ItemClass Layout and Group
 	const auto* Layout = ItemDef->FindFragmentByClass<UInventoryFragment_InventoryMenu>();
@@ -57,8 +64,10 @@ int32 UInventoryComponent::AddItemDefinition(TSubclassOf<UInventoryItemDefinitio
 	{
 		return 0;
 	}
-	
+
+	TrySetGameplayAttributes(ItemDef, ItemsAdded);	
 	TryAttachItem(ItemDef);
+	TryGrantAbilites(ItemDef);
 	
 	UpdateInventory.Broadcast(Entries);
 	
@@ -83,6 +92,8 @@ int32 UInventoryComponent::RemoveItemDefinition(UInventoryItemDefinition* ItemDe
 	if(Index == INDEX_NONE) { return 0; }
 
 	const int32 ItemsRemoved = RemoveItems(Layout->Group, Layout->MaxItemsPerStack, Count, Index);
+
+	TrySetGameplayAttributes(ItemDef, -ItemsRemoved);
 	
 	UpdateInventory.Broadcast(Entries);
 
@@ -93,27 +104,86 @@ void UInventoryComponent::Select(const UInventoryItemDefinition* ItemDef)
 {
 	if(!ItemDef) { return; }
 	
-	const auto* Equippable = ItemDef->FindFragmentByClass<UInventoryFragment_EquippableItem>();
+	if (TryEquip(ItemDef)) { return; }
+}
 
-	if(!Equippable) { return; }
-
-	if(Equippable->ItemClass)
-	{		
-		AItem* Item = GetWorld()->SpawnActor<AItem>(Equippable->ItemClass, FTransform());
-		GetEiraCharacterOwner()->Equip(Item, Equippable->AttachSocket);		
-	}
-
-	const auto* Attachable = ItemDef->FindFragmentByClass<UInventoryFragment_AttachableItem>();
-
-	if(Attachable)
-	{
-		GetEiraCharacterOwner()->ClearSocket(Attachable->SocketName);
-	}
+void UInventoryComponent::Deselect(TSubclassOf<UInventoryItemDefinition> ItemDefClass)
+{	
+	UInventoryItemDefinition* ItemDef = NewObject<UInventoryItemDefinition>(this, ItemDefClass, NAME_None, RF_NoFlags, ItemDefClass->GetDefaultObject(), true);
+	ItemDef->Fragments = GetDefault<UInventoryItemDefinition>(ItemDefClass)->Fragments;
+	TryAttachItem(ItemDef);
 }
 
 AEiraCharacter* UInventoryComponent::GetEiraCharacterOwner()
 {
 	return EiraCharacterOwner;
+}
+
+bool UInventoryComponent::TryAttachItem(UInventoryItemDefinition* ItemDef)
+{
+	const auto* Attachable = ItemDef->FindFragmentByClass<UInventoryFragment_AttachableItem>();
+	
+	if(!Attachable) { return false; }
+
+	// TSubclassOf<AItem> ItemClass = Attachable->ItemClass ? Attachable->ItemClass : ItemDef->ItemClass;
+	AItem* Item = GetWorld()->SpawnActor<AItem>(ItemDef->ItemClass, FTransform());
+	GetEiraCharacterOwner()->AttachToSocket(Item, Attachable->SocketName);
+	return true;
+}
+
+bool UInventoryComponent::TrySetGameplayAttributes(UInventoryItemDefinition* ItemDef, const int32 ItemCount)
+{
+	const auto* SetAttributeFragment = ItemDef->FindFragmentByClass<UInventoryItemFragment_SetGameplayAttributes>();
+	if(!SetAttributeFragment) { return false; }
+	
+	check(GESetAnyAttributeByCaller);
+	UAbilitySystemComponent* ASC = GetEiraCharacterOwner()->GetAbilitySystemComponent();
+	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+	EffectContextHandle.AddSourceObject(this);
+	const FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(GESetAnyAttributeByCaller, 1, EffectContextHandle);
+	
+	FGameplayEffectSpec* Spec = SpecHandle.Data.Get();
+
+	if(SetAttributeFragment->Attribute.IsValid())
+	{
+		Spec->SetSetByCallerMagnitude(SetAttributeFragment->Attribute, ItemCount);
+	}
+
+	for (auto Attribute : SetAttributeFragment->AttributeMap)
+	{		
+		Spec->SetSetByCallerMagnitude(Attribute.Key, Attribute.Value);
+	}
+	
+	ASC->ApplyGameplayEffectSpecToSelf(*Spec);
+	return true;
+}
+
+bool UInventoryComponent::TryEquip(const UInventoryItemDefinition* ItemDef)
+{
+	const auto* Equippable = ItemDef->FindFragmentByClass<UInventoryFragment_EquippableItem>();
+
+	if(!Equippable) { return false; }
+	
+	AItem* Item = GetWorld()->SpawnActor<AItem>(ItemDef->ItemClass, FTransform());
+	GetEiraCharacterOwner()->Equip(Item, Equippable->AttachSocket);		
+
+	const auto* Attachable = ItemDef->FindFragmentByClass<UInventoryFragment_AttachableItem>();
+
+	if(!Attachable) { return true; }
+	
+	GetEiraCharacterOwner()->ClearSocket(Attachable->SocketName);
+	
+	return true;
+}
+
+bool UInventoryComponent::TryGrantAbilites(const UInventoryItemDefinition* ItemDef)
+{
+	const auto* GrantGameplayAbility = ItemDef->FindFragmentByClass<UInventoryFragment_GrantGameplayAbility>();
+	if(!GrantGameplayAbility) { return false; }
+
+	FGameplayAbilitySpec AbilitySpec(GrantGameplayAbility->GameplayAbilityClass, 1);
+	GetEiraCharacterOwner()->GetAbilitySystemComponent()->GiveAbility(AbilitySpec);
+	return true;
 }
 
 void UInventoryComponent::UpdateFreeStacks(const EInventoryGroup Group, const int32 MaxItemsPerStack, const int32 OldCount, const int32 NewCount)
@@ -183,16 +253,5 @@ FInventoryEntry* UInventoryComponent::GetOrCreateEntry(UInventoryItemDefinition*
 	InventoryEntry->ItemDef = PickupItem;
 	// FreeStacksPerGroup[Group] -= 1;
 	return InventoryEntry;
-}
-
-bool UInventoryComponent::TryAttachItem(UInventoryItemDefinition* ItemDef)
-{
-	if(const auto* Attachable = ItemDef->FindFragmentByClass<UInventoryFragment_AttachableItem>())
-	{
-		AItem* Item = GetWorld()->SpawnActor<AItem>(Attachable->ItemClass, FTransform());
-		GetEiraCharacterOwner()->AttachToSocket(Item, Attachable->SocketName);
-		return true;
-	}
-	return false;
 }
 

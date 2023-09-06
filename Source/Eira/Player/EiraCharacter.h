@@ -14,6 +14,7 @@
 class UInventoryComponent;
 class USphereComponent;
 class UEiraAttributeSet;
+class UResourcesAttributeSet;
 class UEiraAbilitySystemComponent;
 class UEiraInputConfig;
 class USpringArmComponent;
@@ -59,7 +60,13 @@ class AEiraCharacter : public ACharacter, public IAbilitySystemInterface, public
 	TObjectPtr<UInventoryComponent> InventoryComponent;
 	
 	UPROPERTY()
-	const UEiraAttributeSet* Attributes;	
+	const UEiraAttributeSet* Attributes;
+
+	UPROPERTY()
+	const UResourcesAttributeSet* Resources;
+
+	UPROPERTY()
+	TObjectPtr<AItem> EquippedItem;
 
 public:
 	AEiraCharacter();
@@ -69,6 +76,7 @@ public:
 	virtual TArray<UShapeComponent*> GetCollidersThatHaveTags_Implementation(FGameplayTagContainer ColliderTags) override;	
 	virtual UShapeComponent* GetColliderThatHasTag_Implementation(FGameplayTag ColliderTag) override;
 	void Equip(AItem* Item, FName SocketName);
+	void Unequip();
 	void AttachToSocket(AItem* Item, FName SocketName);
 	void ClearSocket(FName SocketName);
 	

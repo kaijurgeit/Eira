@@ -58,10 +58,10 @@ void AItem::AddToInventory(UInventoryComponent* InventoryComponent)
 {
 	if(!InventoryComponent) return;
 	
-	for (FInventoryClassEntry& PickupClassEntry : StaticInventory)
+	for (FInventoryClassEntry& ItemClassEntry : StaticInventory)
 	{
-		const int32 ItemsAdded = InventoryComponent->AddItemDefinition(PickupClassEntry.ItemDef, PickupClassEntry.Count);
-		PickupClassEntry.Count -= ItemsAdded;
+		const int32 ItemsAdded = InventoryComponent->AddItemDefinition(ItemClassEntry.ItemDef, ItemClassEntry.Count);
+		ItemClassEntry.Count -= ItemsAdded;
 	}
 }
 
@@ -77,6 +77,15 @@ void AItem::BeginPlay()
 	IconBillboardComponent->SetMaterial(0, DynamicMaterial);
 	const FVector IconLocation = GetActorLocation() + FVector(0.f, 0.f, 50.f);
 	IconBillboardComponent->SetWorldLocation(IconLocation);
+
+	for (auto InventoryClassEntry : StaticInventory)
+	{
+		auto ItemDef = GetMutableDefault<UInventoryItemDefinition>(InventoryClassEntry.ItemDef);
+		if(!ItemDef->ItemClass)
+		{
+			ItemDef->ItemClass = this->GetClass();			
+		}
+	}
 }
 
 // Called every frame
