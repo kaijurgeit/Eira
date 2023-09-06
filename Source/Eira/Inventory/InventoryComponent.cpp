@@ -32,37 +32,13 @@ void UInventoryComponent::BeginPlay()
 	FreeStacksPerGroup = TMap<EInventoryGroup, int32>(MaxStacksPerGroup);
 }
 
-void UInventoryComponent::TrySetGameplayAttributes(UInventoryItemDefinition* ItemDef, const int32 ItemCount)
-{
-	if(const auto* SetAttributeFragment = ItemDef->FindFragmentByClass<UInventoryItemFragment_SetGameplayAttributes>())
-	{
-		check(GESetAnyAttributeByCaller);
-		UAbilitySystemComponent* ASC = GetEiraCharacterOwner()->GetAbilitySystemComponent();
-		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-		EffectContextHandle.AddSourceObject(this);
-		const FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(GESetAnyAttributeByCaller, 1, EffectContextHandle);
-		
-		FGameplayEffectSpec* Spec = SpecHandle.Data.Get();
-
-		if(SetAttributeFragment->Attribute.IsValid())
-		{
-			Spec->SetSetByCallerMagnitude(SetAttributeFragment->Attribute, ItemCount);
-		}
-
-		for (auto Attribute : SetAttributeFragment->AttributeMap)
-		{		
-			Spec->SetSetByCallerMagnitude(Attribute.Key, Attribute.Value);
-		}
-		
-		ASC->ApplyGameplayEffectSpecToSelf(*Spec);
-	}
-}
 
 int32 UInventoryComponent::AddItemDefinition(TSubclassOf<UInventoryItemDefinition> ItemDefClass, int32 Count)
 {
 	// Create Instance from TSubclassOf<UInventoryItemDefinition> with Subclass as type
 	UInventoryItemDefinition* ItemDef = NewObject<UInventoryItemDefinition>(this, ItemDefClass, NAME_None, RF_NoFlags, ItemDefClass->GetDefaultObject(), true);
 	ItemDef->Fragments = GetDefault<UInventoryItemDefinition>(ItemDefClass)->Fragments;
+	UE_LOG(LogTemp, Warning, TEXT("ItemDef -> %s"), *ItemDef->ItemClass->GetName());
 	
 	// Get ItemClass Layout and Group
 	const auto* Layout = ItemDef->FindFragmentByClass<UInventoryFragment_InventoryMenu>();
@@ -127,27 +103,76 @@ void UInventoryComponent::Select(const UInventoryItemDefinition* ItemDef)
 {
 	if(!ItemDef) { return; }
 	
-	const auto* Equippable = ItemDef->FindFragmentByClass<UInventoryFragment_EquippableItem>();
+	if (TryEquip(ItemDef)) { return; }
+}
 
-	if(!Equippable) { return; }
-
-	if(Equippable->ItemClass)
-	{		
-		AItem* Item = GetWorld()->SpawnActor<AItem>(Equippable->ItemClass, FTransform());
-		GetEiraCharacterOwner()->Equip(Item, Equippable->AttachSocket);		
-	}
-
-	const auto* Attachable = ItemDef->FindFragmentByClass<UInventoryFragment_AttachableItem>();
-
-	if(Attachable)
-	{
-		GetEiraCharacterOwner()->ClearSocket(Attachable->SocketName);
-	}
+void UInventoryComponent::Deselect(TSubclassOf<UInventoryItemDefinition> ItemDefClass)
+{	
+	UInventoryItemDefinition* ItemDef = NewObject<UInventoryItemDefinition>(this, ItemDefClass, NAME_None, RF_NoFlags, ItemDefClass->GetDefaultObject(), true);
+	ItemDef->Fragments = GetDefault<UInventoryItemDefinition>(ItemDefClass)->Fragments;
+	TryAttachItem(ItemDef);
 }
 
 AEiraCharacter* UInventoryComponent::GetEiraCharacterOwner()
 {
 	return EiraCharacterOwner;
+}
+
+bool UInventoryComponent::TryAttachItem(UInventoryItemDefinition* ItemDef)
+{
+	const auto* Attachable = ItemDef->FindFragmentByClass<UInventoryFragment_AttachableItem>();
+	
+	if(!Attachable) { return false; }
+
+	// TSubclassOf<AItem> ItemClass = Attachable->ItemClass ? Attachable->ItemClass : ItemDef->ItemClass;
+	AItem* Item = GetWorld()->SpawnActor<AItem>(ItemDef->ItemClass, FTransform());
+	GetEiraCharacterOwner()->AttachToSocket(Item, Attachable->SocketName);
+	return true;
+}
+
+bool UInventoryComponent::TrySetGameplayAttributes(UInventoryItemDefinition* ItemDef, const int32 ItemCount)
+{
+	const auto* SetAttributeFragment = ItemDef->FindFragmentByClass<UInventoryItemFragment_SetGameplayAttributes>();
+	if(!SetAttributeFragment) { return false; }
+	
+	check(GESetAnyAttributeByCaller);
+	UAbilitySystemComponent* ASC = GetEiraCharacterOwner()->GetAbilitySystemComponent();
+	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+	EffectContextHandle.AddSourceObject(this);
+	const FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(GESetAnyAttributeByCaller, 1, EffectContextHandle);
+	
+	FGameplayEffectSpec* Spec = SpecHandle.Data.Get();
+
+	if(SetAttributeFragment->Attribute.IsValid())
+	{
+		Spec->SetSetByCallerMagnitude(SetAttributeFragment->Attribute, ItemCount);
+	}
+
+	for (auto Attribute : SetAttributeFragment->AttributeMap)
+	{		
+		Spec->SetSetByCallerMagnitude(Attribute.Key, Attribute.Value);
+	}
+	
+	ASC->ApplyGameplayEffectSpecToSelf(*Spec);
+	return true;
+}
+
+bool UInventoryComponent::TryEquip(const UInventoryItemDefinition* ItemDef)
+{
+	const auto* Equippable = ItemDef->FindFragmentByClass<UInventoryFragment_EquippableItem>();
+
+	if(!Equippable) { return false; }
+	
+	AItem* Item = GetWorld()->SpawnActor<AItem>(ItemDef->ItemClass, FTransform());
+	GetEiraCharacterOwner()->Equip(Item, Equippable->AttachSocket);		
+
+	const auto* Attachable = ItemDef->FindFragmentByClass<UInventoryFragment_AttachableItem>();
+
+	if(!Attachable) { return true; }
+	
+	GetEiraCharacterOwner()->ClearSocket(Attachable->SocketName);
+	
+	return true;
 }
 
 void UInventoryComponent::UpdateFreeStacks(const EInventoryGroup Group, const int32 MaxItemsPerStack, const int32 OldCount, const int32 NewCount)
@@ -217,16 +242,5 @@ FInventoryEntry* UInventoryComponent::GetOrCreateEntry(UInventoryItemDefinition*
 	InventoryEntry->ItemDef = PickupItem;
 	// FreeStacksPerGroup[Group] -= 1;
 	return InventoryEntry;
-}
-
-bool UInventoryComponent::TryAttachItem(UInventoryItemDefinition* ItemDef)
-{
-	if(const auto* Attachable = ItemDef->FindFragmentByClass<UInventoryFragment_AttachableItem>())
-	{
-		AItem* Item = GetWorld()->SpawnActor<AItem>(Attachable->ItemClass, FTransform());
-		GetEiraCharacterOwner()->AttachToSocket(Item, Attachable->SocketName);
-		return true;
-	}
-	return false;
 }
 

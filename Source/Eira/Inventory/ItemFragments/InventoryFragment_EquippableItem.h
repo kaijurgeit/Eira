@@ -19,9 +19,6 @@ class EIRA_API UInventoryFragment_EquippableItem : public UInventoryItemFragment
 
 public:
 	UPROPERTY(EditAnywhere, Category=Inventory)
-	TSubclassOf<AItem> ItemClass;
-
-	UPROPERTY(EditAnywhere, Category=Inventory)
 	TArray<TObjectPtr<UEiraGameplayAbility>> AbilitiesToGrant;
 	
 	UPROPERTY(EditAnywhere, Category=Inventory)

@@ -14,8 +14,4 @@ UCLASS()
 class EIRA_API UInventoryFragment_DropableItem : public UInventoryItemFragment
 {
 	GENERATED_BODY()
-	
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Inventory)
-	TSubclassOf<AItem> DropableItem;
 };

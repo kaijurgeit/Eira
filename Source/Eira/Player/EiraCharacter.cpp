@@ -125,7 +125,16 @@ UShapeComponent* AEiraCharacter::GetColliderThatHasTag_Implementation(FGameplayT
 
 void AEiraCharacter::Equip(AItem* Item, FName SocketName)
 {
+	Unequip();
+	EquippedItem = Item;
 	AttachToSocket(Item, SocketName);
+}
+
+void AEiraCharacter::Unequip()
+{
+	if(!EquippedItem) { return; }
+	InventoryComponent->Deselect(EquippedItem->StaticInventory[0].ItemDef);
+	EquippedItem->Destroy();	
 }
 
 void AEiraCharacter::AttachToSocket(AItem* Item, FName SocketName)

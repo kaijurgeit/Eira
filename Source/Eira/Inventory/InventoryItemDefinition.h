@@ -6,6 +6,7 @@
 #include "UObject/Object.h"
 #include "InventoryItemDefinition.generated.h"
 
+class AItem;
 class UInventoryItemFragment;
 /**
  * 
@@ -16,8 +17,11 @@ class EIRA_API UInventoryItemDefinition : public UObject
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Inventory, Instanced)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Inventory)
 	TArray<TObjectPtr<UInventoryItemFragment>> Fragments = TArray<TObjectPtr<UInventoryItemFragment>>();
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Inventory)
+	TSubclassOf<AItem> ItemClass;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure=false, meta=(DeterminesOutputType=FragmentClass))
 	const UInventoryItemFragment* FindFragmentByClass(TSubclassOf<UInventoryItemFragment> FragmentClass) const;

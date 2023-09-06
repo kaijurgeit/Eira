@@ -77,6 +77,15 @@ void AItem::BeginPlay()
 	IconBillboardComponent->SetMaterial(0, DynamicMaterial);
 	const FVector IconLocation = GetActorLocation() + FVector(0.f, 0.f, 50.f);
 	IconBillboardComponent->SetWorldLocation(IconLocation);
+
+	for (auto InventoryClassEntry : StaticInventory)
+	{
+		auto ItemDef = GetMutableDefault<UInventoryItemDefinition>(InventoryClassEntry.ItemDef);
+		if(!ItemDef->ItemClass)
+		{
+			ItemDef->ItemClass = this->GetClass();			
+		}
+	}
 }
 
 // Called every frame

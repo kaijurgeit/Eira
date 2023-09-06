@@ -65,6 +65,9 @@ class AEiraCharacter : public ACharacter, public IAbilitySystemInterface, public
 	UPROPERTY()
 	const UResourcesAttributeSet* Resources;
 
+	UPROPERTY()
+	TObjectPtr<AItem> EquippedItem;
+
 public:
 	AEiraCharacter();
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
@@ -73,6 +76,7 @@ public:
 	virtual TArray<UShapeComponent*> GetCollidersThatHaveTags_Implementation(FGameplayTagContainer ColliderTags) override;	
 	virtual UShapeComponent* GetColliderThatHasTag_Implementation(FGameplayTag ColliderTag) override;
 	void Equip(AItem* Item, FName SocketName);
+	void Unequip();
 	void AttachToSocket(AItem* Item, FName SocketName);
 	void ClearSocket(FName SocketName);
 	
