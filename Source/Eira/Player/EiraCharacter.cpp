@@ -191,9 +191,6 @@ void AEiraCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 	// Set up action bindings
 	if (UEiraInputComponent* EiraIC = CastChecked<UEiraInputComponent>(PlayerInputComponent))
 	{
-		// Make sure to set your input component class in the InputSettings->DefaultClasses
-		check(EiraIC);
-
 		const FEiraGameplayTags GameplayTags = FEiraGameplayTags::Get();
 
 		TArray<uint32> BindHandles;
