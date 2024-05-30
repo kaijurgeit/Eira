@@ -3,9 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Blueprint/UserWidget.h"
 #include "Interfaces/Pickupable.h"
 #include "Inventory/ItemFragments/InventoryFragment_InventoryMenu.h"
-#include "UMG/Public/Blueprint/UserWidget.h"
+
 #include "InventoryMenu.generated.h"
 
 class UInventorySlot;

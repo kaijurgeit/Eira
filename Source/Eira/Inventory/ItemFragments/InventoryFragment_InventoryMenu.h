@@ -8,7 +8,7 @@
 #include "InventoryFragment_InventoryMenu.generated.h"
 
 UENUM(BlueprintType)
-enum class EInventoryGroup
+enum class EInventoryGroup : uint8
 {
 	None,
 	Quests,

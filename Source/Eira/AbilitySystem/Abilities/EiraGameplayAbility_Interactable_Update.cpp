@@ -70,7 +70,9 @@ void UEiraGameplayAbility_Interactable_Update::HighlightInteractableTarget(bool 
 
 AActor* UEiraGameplayAbility_Interactable_Update::GetNearestInteractActor(const FGameplayAbilityActorInfo* ActorInfo)
 {
-	UEiraUtilities::OrderByDistance(ActorInfo->OwnerActor.Get(), InteractableTargets, InteractableTargets);
+	TArray<AActor*> OutArray;
+	UEiraUtilities::OrderByDistance(ActorInfo->OwnerActor.Get(), InteractableTargets, OutArray);
+	InteractableTargets = OutArray;
 
 	if(InteractableTargets.IsEmpty())
 	{
